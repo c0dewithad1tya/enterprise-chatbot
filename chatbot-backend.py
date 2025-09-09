@@ -15,25 +15,70 @@ CORS(app)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def extract_relevant_info(content, query):
-    """Extract relevant information from content based on query"""
+def expand_query_terms(query):
+    """Expand query with synonyms and related terms"""
     query_lower = query.lower()
+    expanded_terms = query_lower.split()
+    
+    # Add synonyms and expansions
+    synonyms = {
+        'ml': ['machine learning', 'ai', 'artificial intelligence'],
+        'tech': ['technology', 'technical'],
+        'stack': ['technology stack', 'tech stack', 'technologies'],
+        'cto': ['chief technology officer', 'technology officer'],
+        'cio': ['chief information officer', 'information officer'],
+        'backend': ['back-end', 'server', 'api'],
+        'frontend': ['front-end', 'ui', 'interface'],
+        'database': ['db', 'storage', 'data store']
+    }
+    
+    for term in query_lower.split():
+        if term in synonyms:
+            expanded_terms.extend(synonyms[term])
+    
+    return expanded_terms
+
+def extract_relevant_info(content, query):
+    """Extract relevant information from content based on query with improved logic"""
+    query_terms = expand_query_terms(query)
     lines = [line.strip() for line in content.split('\n') if line.strip()]
     relevant_lines = []
     
-    # Look for structured information (Name:, Email:, etc.)
+    # Score lines based on relevance
+    scored_lines = []
     for line in lines:
-        clean_line = line.replace('- **', '').replace('**', '').replace('###', '').replace('##', '').strip()
+        clean_line = line.replace('- **', '').replace('**', '').replace('###', '').replace('##', '').replace('#', '').strip()
+        if len(clean_line) < 10:
+            continue
+            
+        score = 0
+        clean_lower = clean_line.lower()
         
-        # High priority: structured data
-        if any(marker in clean_line for marker in ['Name:', 'Email:', 'Responsibility:']):
-            relevant_lines.append(clean_line)
-        # Medium priority: lines with query keywords
-        elif any(word in clean_line.lower() for word in query_lower.split() if len(word) > 2):
-            if len(clean_line) > 10:
-                relevant_lines.append(clean_line)
+        # High priority: structured data (Name, Email, Version, etc.)
+        if any(marker in clean_line for marker in ['Name:', 'Email:', 'Responsibility:', 'Version:', 'Purpose:', 'Features:', 'Models:', 'Library:']):
+            score += 10
+        
+        # Medium priority: technical specifications
+        if any(marker in clean_lower for marker in ['**version**', '**models**', '**features**', '**developer**', '**purpose**']):
+            score += 8
+        
+        # Score based on query term matches
+        for term in query_terms:
+            if len(term) > 2 and term in clean_lower:
+                score += 3 if len(term) > 5 else 2
+        
+        # Bonus for list items and technical specs
+        if clean_line.startswith('- ') and any(char in clean_line for char in [':', '**', 'v', '(', ')']):
+            score += 2
+            
+        if score > 0:
+            scored_lines.append((score, clean_line))
     
-    return relevant_lines[:5]
+    # Sort by score and take top results
+    scored_lines.sort(reverse=True, key=lambda x: x[0])
+    relevant_lines = [line for score, line in scored_lines[:8]]
+    
+    return relevant_lines
 
 def format_response_title(query):
     """Create a clean title for the response"""
@@ -61,7 +106,7 @@ def format_response_title(query):
         return f"## Answer\n"
 
 def search_local_documents(query):
-    """Search through indexed documents using FAISS vector similarity"""
+    """Search through indexed documents using FAISS vector similarity with improved multi-chunk aggregation"""
     try:
         # Load FAISS index and metadata
         index = faiss.read_index('faiss_index.index')
@@ -72,45 +117,64 @@ def search_local_documents(query):
         # Load the model for encoding the query
         model = SentenceTransformer('all-MiniLM-L6-v2')
         
+        # Expand query with synonyms
+        expanded_terms = expand_query_terms(query)
+        
         # Encode the query
         query_embedding = model.encode([query])
         
-        # Search for similar documents with boosted relevance
-        k = 10
+        # Search for similar documents with increased k for better coverage
+        k = 15
         distances, indices = index.search(query_embedding.astype('float32'), k)
         
         # Create results with chunks and similarity scores
         top_results = []
-        query_terms = query.lower().split()
+        query_lower = query.lower()
         
-        # Filter for relevance - prioritize chunks that contain query terms
+        # Enhanced relevance scoring
         for dist, idx in zip(distances[0], indices[0]):
             if idx < len(chunks):
                 chunk = chunks[idx]
                 content_lower = chunk['content'].lower()
                 section_title_lower = chunk.get('section_title', '').lower()
+                doc_title_lower = chunk.get('document_title', '').lower()
                 
-                # Check if chunk contains relevant terms
                 relevance_boost = 0
                 
-                # Special handling for ML stack queries
-                if 'machine' in query.lower() and 'learning' in query.lower():
-                    if 'machine learning stack' in section_title_lower:
-                        relevance_boost += 10
-                    elif 'machine learning' in section_title_lower:
-                        relevance_boost += 5
+                # Enhanced ML/Technology stack detection
+                ml_terms = ['machine learning', 'ml', 'ai', 'artificial intelligence', 'technology stack', 'tech stack']
+                if any(term in query_lower for term in ml_terms):
+                    if any(term in section_title_lower for term in ['machine learning', 'embedding', 'vector', 'nlp', 'language model']):
+                        relevance_boost += 15
+                    if 'technology stack' in doc_title_lower:
+                        relevance_boost += 12
+                    if any(term in content_lower for term in ['faiss', 'openai', 'transformers', 'pytorch']):
+                        relevance_boost += 8
                 
-                # General term matching
-                for term in query_terms:
+                # People/team queries
+                people_terms = ['who is', 'cto', 'cio', 'team', 'lead', 'manager']
+                if any(term in query_lower for term in people_terms):
+                    if any(term in section_title_lower for term in ['cto', 'cio', 'lead', 'manager', 'team']):
+                        relevance_boost += 15
+                    if 'people' in doc_title_lower or 'team' in doc_title_lower:
+                        relevance_boost += 10
+                
+                # General enhanced term matching with expanded terms
+                for term in expanded_terms:
                     if len(term) > 2:
+                        # Higher boost for exact section title matches
                         if term in section_title_lower:
+                            relevance_boost += 5
+                        # Medium boost for document title matches
+                        if term in doc_title_lower:
                             relevance_boost += 3
+                        # Lower boost for content matches
                         if term in content_lower:
                             relevance_boost += 1
                 
                 # Combine distance score with relevance boost
                 base_score = float(1 / (1 + dist))
-                final_score = base_score * (1 + relevance_boost * 0.5)
+                final_score = base_score * (1 + relevance_boost * 0.3)
                 
                 top_results.append({
                     'chunk': chunk,
@@ -121,7 +185,7 @@ def search_local_documents(query):
         
         # Re-sort by combined score
         top_results.sort(key=lambda x: x['score'], reverse=True)
-        top_results = top_results[:5]
+        top_results = top_results[:8]
         
     except (FileNotFoundError, Exception) as e:
         # Fallback to keyword search if vector index doesn't exist
@@ -169,52 +233,93 @@ I couldn't find information about **"{query}"** in the documentation.
             'sources': []
         }
     
-    # Build response from results
+    # Enhanced multi-chunk aggregation
     sources = []
     seen_docs = set()
     
-    # Group results by document and extract the most relevant parts
-    doc_contents = {}
+    # Group chunks by document and combine related content
+    doc_chunks = {}
     for result in top_results:
         chunk = result['chunk']
         doc_title = chunk['document_title']
         
-        if doc_title not in doc_contents:
-            doc_contents[doc_title] = {
-                'content': chunk['content'],
-                'relevance': result.get('score', 0)
-            }
+        if doc_title not in doc_chunks:
+            doc_chunks[doc_title] = []
+        doc_chunks[doc_title].append({
+            'chunk': chunk,
+            'score': result['score'],
+            'relevance_boost': result['relevance_boost']
+        })
     
-    # For ML/technology queries, prioritize Technology Stack document
+    # Smart document selection and content aggregation
     query_lower_normalized = query.lower()
-    if any(term in query_lower_normalized for term in ['machine learning', 'ml', 'stack', 'technology', 'tech stack', 'ai']):
-        # Check if Technology Stack document is in results
-        tech_stack_doc = None
-        for doc_title, doc_data in doc_contents.items():
+    selected_content = ""
+    main_doc_title = ""
+    
+    # Enhanced query categorization
+    ml_terms = ['machine learning', 'ml', 'ai', 'technology stack', 'tech stack', 'embedding', 'vector', 'model']
+    people_terms = ['who is', 'cto', 'cio', 'team', 'lead', 'manager', 'responsibility']
+    
+    if any(term in query_lower_normalized for term in ml_terms):
+        # For ML/tech queries, aggregate multiple related chunks
+        tech_chunks = []
+        for doc_title, chunks_list in doc_chunks.items():
             if 'Technology Stack' in doc_title:
-                tech_stack_doc = (doc_title, doc_data)
+                # Sort chunks by relevance and take top ones
+                chunks_list.sort(key=lambda x: x['score'], reverse=True)
+                tech_chunks.extend([c['chunk'] for c in chunks_list[:4]])  # Take top 4 chunks
+                main_doc_title = doc_title
                 break
         
-        # If Technology Stack is found and reasonably relevant, use it
-        if tech_stack_doc and tech_stack_doc[1]['relevance'] > 0.3:
-            main_doc_title, main_doc_data = tech_stack_doc
+        if tech_chunks:
+            # Combine content from multiple related chunks
+            combined_content = "\n\n".join([chunk['content'] for chunk in tech_chunks])
+            selected_content = combined_content
         else:
-            sorted_docs = sorted(doc_contents.items(), key=lambda x: x[1]['relevance'], reverse=True)
-            main_doc_title, main_doc_data = sorted_docs[0]
-    else:
-        # Take the most relevant document
-        sorted_docs = sorted(doc_contents.items(), key=lambda x: x[1]['relevance'], reverse=True)
-        main_doc_title, main_doc_data = sorted_docs[0]
+            # Fallback to best single chunk
+            best_doc = max(doc_chunks.items(), key=lambda x: max(c['score'] for c in x[1]))
+            main_doc_title, chunks_list = best_doc
+            selected_content = chunks_list[0]['chunk']['content']
     
-    # Create response
+    elif any(term in query_lower_normalized for term in people_terms):
+        # For people queries, look for team/people documents
+        people_chunks = []
+        for doc_title, chunks_list in doc_chunks.items():
+            if 'People' in doc_title or 'Team' in doc_title:
+                chunks_list.sort(key=lambda x: x['score'], reverse=True)
+                people_chunks.extend([c['chunk'] for c in chunks_list[:3]])
+                main_doc_title = doc_title
+                break
+        
+        if people_chunks:
+            combined_content = "\n\n".join([chunk['content'] for chunk in people_chunks])
+            selected_content = combined_content
+        else:
+            # Fallback
+            best_doc = max(doc_chunks.items(), key=lambda x: max(c['score'] for c in x[1]))
+            main_doc_title, chunks_list = best_doc
+            selected_content = chunks_list[0]['chunk']['content']
+    
+    else:
+        # General queries - take the best document
+        best_doc = max(doc_chunks.items(), key=lambda x: max(c['score'] for c in x[1]))
+        main_doc_title, chunks_list = best_doc
+        # Potentially combine top 2 chunks if they're closely related
+        chunks_list.sort(key=lambda x: x['score'], reverse=True)
+        if len(chunks_list) > 1 and chunks_list[1]['score'] > chunks_list[0]['score'] * 0.7:
+            selected_content = chunks_list[0]['chunk']['content'] + "\n\n" + chunks_list[1]['chunk']['content']
+        else:
+            selected_content = chunks_list[0]['chunk']['content']
+    
+    # Create response with improved extraction
     response_title = format_response_title(query)
-    key_info = extract_relevant_info(main_doc_data['content'], query)
+    key_info = extract_relevant_info(selected_content, query)
     
     if key_info:
-        formatted_info = '\\n'.join(f"• {line}" for line in key_info)
+        formatted_info = '\\n'.join(key_info)
         message = f"{response_title}\\n{formatted_info}"
     else:
-        # Handle special cases
+        # Handle special cases with better fallbacks
         query_lower = query.lower()
         if 'ceo' in query_lower:
             message = "## CEO Information\\n\\nNo CEO information is available in the current documentation.\\n\\nAvailable executives:\\n• Chief Technology Officer (CTO): Alexandra Chen\\n• Chief Information Officer (CIO): Marcus Williams"
@@ -222,10 +327,12 @@ I couldn't find information about **"{query}"** in the documentation.
             person = query.replace('Who is', '').replace('?', '').strip()
             message = f"## {person}\\n\\nNo information found about {person} in the documentation."
         else:
-            message = f"## Information Not Found\\n\\nI couldn't find specific information about: {query}"
+            # Provide a snippet of the most relevant content
+            content_preview = selected_content[:300] + "..." if len(selected_content) > 300 else selected_content
+            message = f"## {response_title.replace('##', '').strip()}\\n\\n{content_preview}"
     
     # Create source references
-    for doc_title, _ in [(main_doc_title, main_doc_data)]:
+    for doc_title in [main_doc_title]:
         for chunk in chunks:
             if chunk['document_title'] == doc_title and doc_title not in seen_docs:
                 seen_docs.add(doc_title)
