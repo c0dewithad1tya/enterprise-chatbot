@@ -1,0 +1,2072 @@
+[
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "OVERVIEW",
+    "chunk_id": "application_architecture.md_section_0",
+    "content": "## OVERVIEW\n\nThe Enterprise Knowledge Chatbot is a sophisticated AI-powered system designed to provide intelligent access to organizational knowledge from multiple sources including Confluence documentation, Git repositories, and internal knowledge bases. The system leverages modern NLP techniques and vector databases for semantic search capabilities.\n",
+    "chunk_index": 0,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "ARCHITECTURAL PRINCIPLES - 1. Microservices Architecture",
+    "chunk_id": "application_architecture.md_section_1",
+    "content": "### 1. Microservices Architecture\n- Backend API (Flask-based)\n- Frontend UI (Single Page Application)\n- Vector Database Service\n- Document Processing Pipeline\n",
+    "chunk_index": 1,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "ARCHITECTURAL PRINCIPLES - 2. Scalability First",
+    "chunk_id": "application_architecture.md_section_2",
+    "content": "### 2. Scalability First\n- Horizontal scaling capability\n- Load balancing support\n- Distributed caching\n",
+    "chunk_index": 2,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "ARCHITECTURAL PRINCIPLES - 3. Security by Design",
+    "chunk_id": "application_architecture.md_section_3",
+    "content": "### 3. Security by Design\n- OAuth 2.0 authentication\n- Role-based access control (RBAC)\n- Encrypted data transmission\n- API key management\n",
+    "chunk_index": 3,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "SYSTEM COMPONENTS - 1. FRONTEND LAYER",
+    "chunk_id": "application_architecture.md_section_4",
+    "content": "### 1. FRONTEND LAYER\n**Technology:** HTML5, CSS3, JavaScript (ES6+)\n\n**Features:**\n- Real-time chat interface\n- Theme management system (5 themes)\n- Source attribution display\n- Responsive design\n- WebSocket support for real-time updates\n",
+    "chunk_index": 4,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "SYSTEM COMPONENTS - 2. BACKEND API LAYER",
+    "chunk_id": "application_architecture.md_section_5",
+    "content": "### 2. BACKEND API LAYER\n**Framework:** Flask (Python)\n\n**Key Endpoints:**\n- `/api/chat` - Main conversation endpoint\n- `/api/themes` - Theme management\n- `/api/index/*` - Document indexing\n- `/api/spaces` - Confluence space management\n- `/api/user/*` - User preference management\n",
+    "chunk_index": 5,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "SYSTEM COMPONENTS - 3. INTEGRATION LAYER",
+    "chunk_id": "application_architecture.md_section_6",
+    "content": "### 3. INTEGRATION LAYER\n\n#### Confluence API Integration\n- REST API v2 implementation\n- OAuth authentication\n- Space and page crawling\n- Real-time sync capabilities\n\n#### Git Repository Integration\n- Support for GitHub, GitLab, Bitbucket\n- SSH and HTTPS authentication\n- Branch-specific indexing\n- Commit history analysis\n",
+    "chunk_index": 6,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "SYSTEM COMPONENTS - 4. AI/ML LAYER",
+    "chunk_id": "application_architecture.md_section_7",
+    "content": "### 4. AI/ML LAYER\n\n#### Language Models\n- OpenAI GPT-3.5/4 integration\n- Fallback to open-source models (LLaMA, Mistral)\n- Custom fine-tuning capability\n\n#### Embedding Models\n- Sentence-BERT (all-MiniLM-L6-v2)\n- Support for custom embeddings\n- Multilingual support\n",
+    "chunk_index": 7,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "SYSTEM COMPONENTS - 5. DATA LAYER",
+    "chunk_id": "application_architecture.md_section_8",
+    "content": "### 5. DATA LAYER\n\n#### Vector Database\n- **Primary:** FAISS (Facebook AI Similarity Search)\n- **Secondary:** ChromaDB for persistence\n- **Hybrid search capability**\n\n#### Document Store\n- PostgreSQL for metadata\n- File system for raw documents\n- Redis for caching\n",
+    "chunk_index": 8,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "SYSTEM COMPONENTS - 6. PROCESSING PIPELINE",
+    "chunk_id": "application_architecture.md_section_9",
+    "content": "### 6. PROCESSING PIPELINE\n\n#### Document Processing\n- Text extraction from multiple formats\n- HTML/Markdown parsing\n- Code documentation extraction\n- Chunking strategy (1000 chars, 200 overlap)\n\n#### Indexing Pipeline\n- Asynchronous processing\n- Batch indexing support\n- Incremental updates\n",
+    "chunk_index": 9,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "SYSTEM ARCHITECTURE DIAGRAM",
+    "chunk_id": "application_architecture.md_section_10",
+    "content": "## SYSTEM ARCHITECTURE DIAGRAM\n\n```\n    [User Browser]\n          |\n          v\n    [Load Balancer]\n          |\n    +-----------+\n    |           |\n    v           v\n[Frontend]  [WebSocket]\n    |           |\n    +-----+-----+\n          |\n          v\n    [API Gateway]\n          |\n    +-----+-----+\n    |           |\n    v           v\n[Flask API] [Background Workers]\n    |           |\n    +-----+-----+\n          |\n    +-----+-----+-----+\n    |     |     |     |\n    v     v     v     v\n[Vector] [Doc] [Cache] [Queue]\n  DB    Store  Redis   RabbitMQ\n```\n",
+    "chunk_index": 10,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "DATA FLOW ARCHITECTURE - 1. User Query Flow",
+    "chunk_id": "application_architecture.md_section_11",
+    "content": "### 1. User Query Flow\n```\nUser → Frontend → API → Vector Search → LLM → Response\n```\n",
+    "chunk_index": 11,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "DATA FLOW ARCHITECTURE - 2. Document Indexing Flow",
+    "chunk_id": "application_architecture.md_section_12",
+    "content": "### 2. Document Indexing Flow\n```\nSource → Crawler → Processor → Embedder → Vector DB\n```\n",
+    "chunk_index": 12,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "DATA FLOW ARCHITECTURE - 3. Authentication Flow",
+    "chunk_id": "application_architecture.md_section_13",
+    "content": "### 3. Authentication Flow\n```\nUser → OAuth Provider → API → Token Store → Session\n```\n",
+    "chunk_index": 13,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "SCALABILITY CONSIDERATIONS",
+    "chunk_id": "application_architecture.md_section_14",
+    "content": "## SCALABILITY CONSIDERATIONS\n\n- Horizontal scaling of API servers\n- Vector database sharding\n- Distributed caching layer\n- Queue-based async processing\n- CDN for static assets\n",
+    "chunk_index": 14,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "SECURITY ARCHITECTURE",
+    "chunk_id": "application_architecture.md_section_15",
+    "content": "## SECURITY ARCHITECTURE\n\n- Network segmentation\n- API rate limiting\n- Input validation and sanitization\n- SQL injection prevention\n- XSS protection\n- CORS configuration\n- Secret management (HashiCorp Vault)\n",
+    "chunk_index": 15,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "MONITORING & OBSERVABILITY",
+    "chunk_id": "application_architecture.md_section_16",
+    "content": "## MONITORING & OBSERVABILITY\n\n- **Application metrics:** Prometheus\n- **Log aggregation:** ELK Stack\n- **Distributed tracing:** Jaeger\n- **Error tracking:** Sentry\n- **Performance monitoring:** New Relic\n",
+    "chunk_index": 16,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "DISASTER RECOVERY",
+    "chunk_id": "application_architecture.md_section_17",
+    "content": "## DISASTER RECOVERY\n\n- **Database backups:** Daily\n- **Vector index snapshots:** Hourly\n- **Configuration backup:** On change\n- **Automated failover:** Enabled\n- **Recovery time objective (RTO):** 1 hour\n- **Recovery point objective (RPO):** 24 hours\n",
+    "chunk_index": 17,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "FUTURE ENHANCEMENTS",
+    "chunk_id": "application_architecture.md_section_18",
+    "content": "## FUTURE ENHANCEMENTS\n\n1. Multi-tenant architecture\n2. Federated learning support\n3. Real-time collaboration features\n4. Voice interface integration\n5. Mobile application development\n6. Advanced analytics dashboard\n",
+    "chunk_index": 18,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "ARCHITECTURAL DECISIONS RECORD (ADR) - ADR-001: Choose Flask over FastAPI",
+    "chunk_id": "application_architecture.md_section_19",
+    "content": "### ADR-001: Choose Flask over FastAPI\n- **Decision:** Use Flask for backend API\n- **Rationale:** Better ecosystem, mature libraries\n- **Date:** January 2025\n",
+    "chunk_index": 19,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "ARCHITECTURAL DECISIONS RECORD (ADR) - ADR-002: FAISS for vector storage",
+    "chunk_id": "application_architecture.md_section_20",
+    "content": "### ADR-002: FAISS for vector storage\n- **Decision:** Use FAISS as primary vector database\n- **Rationale:** Performance, scalability, Facebook support\n- **Date:** February 2025\n",
+    "chunk_index": 20,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "ARCHITECTURAL DECISIONS RECORD (ADR) - ADR-003: Microservices over monolith",
+    "chunk_id": "application_architecture.md_section_21",
+    "content": "### ADR-003: Microservices over monolith\n- **Decision:** Adopt microservices architecture\n- **Rationale:** Scalability, independent deployment\n- **Date:** March 2025\n",
+    "chunk_index": 21,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Application Architecture",
+    "document_path": "documentation\\application_architecture.md",
+    "section_title": "COMPLIANCE & STANDARDS",
+    "chunk_id": "application_architecture.md_section_22",
+    "content": "## COMPLIANCE & STANDARDS\n\n- GDPR compliant data handling\n- SOC 2 Type II certification ready\n- ISO 27001 aligned\n- WCAG 2.1 AA accessibility standards\n\n---\n\n*For detailed technical specifications, refer to the [Technical Stack](technology_stack.md) documentation.*  \n*For deployment procedures, see the [Deployment Strategies](deployment_strategies.md) documentation.*",
+    "chunk_index": 22,
+    "total_chunks": 23
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "EXECUTIVE SUMMARY",
+    "chunk_id": "deployment_strategies.md_section_0",
+    "content": "## EXECUTIVE SUMMARY\n\nThis document outlines the deployment strategies, procedures, and best practices for the Enterprise Knowledge Chatbot across development, staging, and production environments. It covers CI/CD pipelines, rollout strategies, rollback procedures, and disaster recovery plans.\n",
+    "chunk_index": 0,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT ENVIRONMENTS - DEVELOPMENT ENVIRONMENT",
+    "chunk_id": "deployment_strategies.md_section_1",
+    "content": "### DEVELOPMENT ENVIRONMENT\n\n**Purpose:** Active development and testing  \n**URL:** https://dev-chatbot.enterprise.internal  \n\n**Infrastructure:**\n- Single node Kubernetes cluster\n- Shared PostgreSQL instance\n- Local Redis cache\n- Mock external services\n\n**Deployment:**\n- **Frequency:** Continuous (on commit)\n- **Approval Required:** No\n- **Automated Tests:** Unit tests only\n",
+    "chunk_index": 1,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT ENVIRONMENTS - STAGING ENVIRONMENT",
+    "chunk_id": "deployment_strategies.md_section_2",
+    "content": "### STAGING ENVIRONMENT\n\n**Purpose:** Pre-production testing and QA  \n**URL:** https://staging-chatbot.enterprise.com\n\n**Infrastructure:**\n- 3-node Kubernetes cluster\n- Dedicated PostgreSQL (replica of prod)\n- Redis cluster (3 nodes)\n- Real external service connections\n\n**Deployment:**\n- **Frequency:** Daily at 2 AM PST\n- **Approval Required:** QA sign-off\n- **Automated Tests:** Full test suite\n",
+    "chunk_index": 2,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT ENVIRONMENTS - PRODUCTION ENVIRONMENT",
+    "chunk_id": "deployment_strategies.md_section_3",
+    "content": "### PRODUCTION ENVIRONMENT\n\n**Purpose:** Live system serving end users  \n**URL:** https://chatbot.enterprise.com\n\n**Infrastructure:**\n- 5-node Kubernetes cluster (multi-AZ)\n- PostgreSQL primary-replica setup\n- Redis cluster (6 nodes)\n- Full monitoring and alerting\n\n**Deployment:**\n- **Frequency:** Weekly (Thursdays 6 PM PST)\n- **Approval Required:** Engineering Manager + Product Manager\n- **Automated Tests:** Smoke tests + canary analysis\n",
+    "chunk_index": 3,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT STRATEGIES - STRATEGY 1: BLUE-GREEN DEPLOYMENT",
+    "chunk_id": "deployment_strategies.md_section_4",
+    "content": "### STRATEGY 1: BLUE-GREEN DEPLOYMENT\n\n**When to Use:** Major releases, database migrations\n\n**Process:**\n1. Deploy new version to \"green\" environment\n2. Run comprehensive tests on green\n3. Switch load balancer to green\n4. Keep blue running for quick rollback\n5. Decommission blue after 24 hours\n\n**Benefits:**\n- Zero downtime\n- Quick rollback capability\n- Full testing before switch\n\n**Drawbacks:**\n- Double infrastructure cost\n- Complex database synchronization\n\n**Implementation:**\n```bash\n# Deploy to green\nkubectl apply -f k8s/green/\n# Test green environment\n./scripts/test-green.sh\n# Switch traffic\nkubectl patch service chatbot-lb -p '{\"spec\":{\"selector\":{\"version\":\"green\"}}}'\n# Monitor\n./scripts/monitor-deployment.sh\n```\n",
+    "chunk_index": 4,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT STRATEGIES - STRATEGY 2: CANARY DEPLOYMENT",
+    "chunk_id": "deployment_strategies.md_section_5",
+    "content": "### STRATEGY 2: CANARY DEPLOYMENT\n\n**When to Use:** Regular feature releases\n\n**Process:**\n1. Deploy new version to small percentage (5%)\n2. Monitor metrics for anomalies\n3. Gradually increase traffic (5% → 25% → 50% → 100%)\n4. Full rollout or rollback based on metrics\n\n**Traffic Split Timeline:**\n- 0-15 min: 5% traffic\n- 15-30 min: 25% traffic\n- 30-60 min: 50% traffic\n- 60+ min: 100% traffic\n\n**Monitoring Metrics:**\n- Error rate < 0.1%\n- P95 latency < 2s\n- CPU usage < 70%\n- Memory usage < 80%\n\n**Implementation:**\n```yaml\n# Istio VirtualService\nspec:\n  http:\n  - match:\n    - headers:\n        canary:\n          exact: \"true\"\n    route:\n    - destination:\n        host: chatbot\n        subset: v2\n      weight: 5\n    - destination:\n        host: chatbot\n        subset: v1\n      weight: 95\n```\n",
+    "chunk_index": 5,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT STRATEGIES - STRATEGY 3: ROLLING UPDATE",
+    "chunk_id": "deployment_strategies.md_section_6",
+    "content": "### STRATEGY 3: ROLLING UPDATE\n\n**When to Use:** Patches, minor updates\n\n**Process:**\n1. Update one pod at a time\n2. Health check before proceeding\n3. Continue until all pods updated\n\n**Configuration:**\n```yaml\nspec:\n  replicas: 5\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxSurge: 1\n      maxUnavailable: 1\n```\n",
+    "chunk_index": 6,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT STRATEGIES - STRATEGY 4: FEATURE FLAGS",
+    "chunk_id": "deployment_strategies.md_section_7",
+    "content": "### STRATEGY 4: FEATURE FLAGS\n\n**When to Use:** Gradual feature rollout\n\n**Implementation:**\n- LaunchDarkly integration\n- User segment targeting\n- Percentage-based rollout\n- Kill switch capability\n\n**Example:**\n```python\nif feature_flag('new_embedding_model', user_id):\n    use_new_model()\nelse:\n    use_legacy_model()\n```\n",
+    "chunk_index": 7,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "CI/CD PIPELINE - GITHUB ACTIONS WORKFLOW",
+    "chunk_id": "deployment_strategies.md_section_8",
+    "content": "### GITHUB ACTIONS WORKFLOW\n\n**Triggers:**\n- Push to main branch\n- Pull request\n- Manual dispatch\n- Scheduled (nightly builds)\n",
+    "chunk_index": 8,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "CI/CD PIPELINE - Pipeline Stages",
+    "chunk_id": "deployment_strategies.md_section_9",
+    "content": "### Pipeline Stages\n\n#### 1. Code Quality Check\n- Linting (pylint, black)\n- Type checking (mypy)\n- Security scan (bandit)\n- License check\n\n#### 2. Build Stage\n- Docker image build\n- Dependency installation\n- Asset compilation\n- Version tagging\n\n#### 3. Test Stage\n- Unit tests (pytest)\n- Integration tests\n- API tests (Postman)\n- Performance tests\n\n#### 4. Security Scan\n- Container vulnerability scan\n- SAST analysis\n- Dependency check\n- Secrets scanning\n\n#### 5. Deploy to Dev\n- Automatic deployment\n- Smoke tests\n- Rollback on failure\n\n#### 6. Deploy to Staging\n- Requires approval\n- Full test suite\n- Performance benchmarks\n\n#### 7. Deploy to Production\n- Manual approval required\n- Canary deployment\n- Monitoring alerts\n- Rollback plan active\n",
+    "chunk_index": 9,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT PROCEDURES - PRE-DEPLOYMENT CHECKLIST",
+    "chunk_id": "deployment_strategies.md_section_10",
+    "content": "### PRE-DEPLOYMENT CHECKLIST\n\n- ✅ Code review completed\n- ✅ All tests passing\n- ✅ Documentation updated\n- ✅ Release notes prepared\n- ✅ Database migrations tested\n- ✅ Rollback plan documented\n- ✅ Monitoring dashboards ready\n- ✅ Team notified in Slack\n- ✅ Maintenance window scheduled\n- ✅ Customer communication sent\n",
+    "chunk_index": 10,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT PROCEDURES - DEPLOYMENT STEPS",
+    "chunk_id": "deployment_strategies.md_section_11",
+    "content": "### DEPLOYMENT STEPS\n\n#### Step 1: Preparation\n```bash\n# Check cluster health\nkubectl get nodes\nkubectl top nodes\n\n# Verify database backup\npg_dump production_db > backup_$(date +%Y%m%d).sql\n\n# Check current version\nkubectl get deployment chatbot-api -o wide\n```\n\n#### Step 2: Deploy Configuration\n```bash\n# Update ConfigMaps\nkubectl apply -f k8s/configmaps/\n\n# Update Secrets (if needed)\nkubectl apply -f k8s/secrets/\n\n# Verify configuration\nkubectl get configmap chatbot-config -o yaml\n```\n\n#### Step 3: Database Migration\n```bash\n# Run migrations in transaction\npython manage.py db upgrade\n\n# Verify migration\npython manage.py db current\n\n# Test rollback capability\npython manage.py db downgrade -1\npython manage.py db upgrade\n```\n\n#### Step 4: Deploy Application\n```bash\n# Update deployment\nkubectl set image deployment/chatbot-api \\\n  chatbot-api=chatbot:v2.0.0 \\\n  --record\n\n# Watch rollout\nkubectl rollout status deployment/chatbot-api\n\n# Verify pods\nkubectl get pods -l app=chatbot-api\n```\n\n#### Step 5: Verification\n```bash\n# Run smoke tests\n./scripts/smoke-tests.sh\n\n# Check metrics\ncurl https://chatbot.enterprise.com/api/health\n\n# Monitor logs\nkubectl logs -f deployment/chatbot-api\n```\n",
+    "chunk_index": 11,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT PROCEDURES - POST-DEPLOYMENT TASKS",
+    "chunk_id": "deployment_strategies.md_section_12",
+    "content": "### POST-DEPLOYMENT TASKS\n\n- ✅ Verify all services healthy\n- ✅ Check error rates in monitoring\n- ✅ Validate key user journeys\n- ✅ Update status page\n- ✅ Send deployment notification\n- ✅ Document any issues\n- ✅ Schedule retrospective\n",
+    "chunk_index": 12,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "ROLLBACK PROCEDURES - AUTOMATIC ROLLBACK TRIGGERS",
+    "chunk_id": "deployment_strategies.md_section_13",
+    "content": "### AUTOMATIC ROLLBACK TRIGGERS\n\n- Error rate > 5%\n- P95 latency > 5 seconds\n- Pod crash loop detected\n- Health check failures > 3\n",
+    "chunk_index": 13,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "ROLLBACK PROCEDURES - MANUAL ROLLBACK DECISION CRITERIA",
+    "chunk_id": "deployment_strategies.md_section_14",
+    "content": "### MANUAL ROLLBACK DECISION CRITERIA\n\n- User complaints > 10\n- Critical bug discovered\n- Data corruption detected\n- Security vulnerability found\n",
+    "chunk_index": 14,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "ROLLBACK PROCEDURES - ROLLBACK STEPS",
+    "chunk_id": "deployment_strategies.md_section_15",
+    "content": "### ROLLBACK STEPS\n\n#### Immediate Rollback (< 5 minutes)\n```bash\n# Rollback deployment\nkubectl rollout undo deployment/chatbot-api\n\n# Verify rollback\nkubectl rollout status deployment/chatbot-api\n\n# Check application version\nkubectl get deployment chatbot-api -o wide\n```\n\n#### Database Rollback\n```bash\n# Stop application\nkubectl scale deployment/chatbot-api --replicas=0\n\n# Restore database\npsql production_db < backup_20250909.sql\n\n# Run migrations\npython manage.py db downgrade -1\n\n# Restart application\nkubectl scale deployment/chatbot-api --replicas=5\n```\n\n#### Full Environment Rollback\n```bash\n# Switch to previous blue-green environment\nkubectl patch service chatbot-lb \\\n  -p '{\"spec\":{\"selector\":{\"version\":\"blue\"}}}'\n\n# Or restore from snapshot\nterraform apply -var=\"snapshot_id=snap-12345\"\n```\n",
+    "chunk_index": 15,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DISASTER RECOVERY - BACKUP STRATEGY",
+    "chunk_id": "deployment_strategies.md_section_16",
+    "content": "### BACKUP STRATEGY\n\n#### Database Backups\n- **Frequency:** Every 6 hours\n- **Retention:** 30 days\n- **Location:** S3 cross-region\n- **Test restore:** Weekly\n\n#### Vector Index Backups\n- **Frequency:** Daily\n- **Method:** FAISS index serialization\n- **Storage:** S3 with versioning\n- **Size:** ~5GB compressed\n\n#### Configuration Backups\n- **Method:** Git repository\n- **Secrets:** Vault backup\n- **Frequency:** On change\n",
+    "chunk_index": 16,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DISASTER RECOVERY - RECOVERY PROCEDURES",
+    "chunk_id": "deployment_strategies.md_section_17",
+    "content": "### RECOVERY PROCEDURES\n\n#### Scenario 1: Database Corruption\n- **RTO:** 1 hour\n- **RPO:** 6 hours\n\n**Procedure:**\n1. Stop application\n2. Restore from latest backup\n3. Replay transaction logs\n4. Verify data integrity\n5. Restart application\n\n#### Scenario 2: Complete Region Failure\n- **RTO:** 4 hours\n- **RPO:** 24 hours\n\n**Procedure:**\n1. Activate DR site\n2. Update DNS\n3. Restore from cross-region backups\n4. Verify functionality\n5. Communicate to users\n\n#### Scenario 3: Data Center Fire\n- **RTO:** 8 hours\n- **RPO:** 24 hours\n\n**Procedure:**\n1. Activate cloud DR environment\n2. Restore from off-site backups\n3. Reconfigure networking\n4. Update all endpoints\n5. Full system validation\n",
+    "chunk_index": 17,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "MONITORING & ALERTS - KEY METRICS TO MONITOR",
+    "chunk_id": "deployment_strategies.md_section_18",
+    "content": "### KEY METRICS TO MONITOR\n\n#### Application Metrics\n- Request rate\n- Error rate\n- Response time (P50, P95, P99)\n- Active users\n- Query success rate\n\n#### Infrastructure Metrics\n- CPU utilization\n- Memory usage\n- Disk I/O\n- Network throughput\n- Pod restart count\n\n#### Business Metrics\n- User satisfaction score\n- Query volume\n- Feature adoption rate\n- Time to first response\n",
+    "chunk_index": 18,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "MONITORING & ALERTS - ALERT CONFIGURATION",
+    "chunk_id": "deployment_strategies.md_section_19",
+    "content": "### ALERT CONFIGURATION\n\n#### Critical Alerts (Page immediately)\n- Service down > 1 minute\n- Error rate > 10%\n- Database connection lost\n- Out of memory errors\n\n#### Warning Alerts (Slack notification)\n- Error rate > 1%\n- High latency (P95 > 3s)\n- Disk usage > 80%\n- Unusual traffic patterns\n",
+    "chunk_index": 19,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT AUTOMATION - INFRASTRUCTURE AS CODE",
+    "chunk_id": "deployment_strategies.md_section_20",
+    "content": "### INFRASTRUCTURE AS CODE\n\n**Terraform Modules:**\n```hcl\nmodule \"chatbot_cluster\" {\n  source = \"./modules/kubernetes\"\n  \n  cluster_name = \"chatbot-prod\"\n  node_count   = 5\n  node_type    = \"m5.xlarge\"\n  \n  monitoring_enabled = true\n  auto_scaling      = true\n}\n```\n",
+    "chunk_index": 20,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT AUTOMATION - GITOPS WORKFLOW",
+    "chunk_id": "deployment_strategies.md_section_21",
+    "content": "### GITOPS WORKFLOW\n\n**Repository Structure:**\n```\ndeployments/\n├── base/\n│   ├── deployment.yaml\n│   ├── service.yaml\n│   └── configmap.yaml\n├── overlays/\n│   ├── development/\n│   ├── staging/\n│   └── production/\n└── scripts/\n    ├── deploy.sh\n    ├── rollback.sh\n    └── validate.sh\n```\n\n**ArgoCD Configuration:**\n- **Auto-sync:** Enabled for dev\n- **Manual sync:** Staging and prod\n- **Prune resources:** True\n- **Self-heal:** True\n",
+    "chunk_index": 21,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT CALENDAR - Regular Maintenance Windows",
+    "chunk_id": "deployment_strategies.md_section_22",
+    "content": "### Regular Maintenance Windows\n- **Production:** Thursday 6-8 PM PST\n- **Staging:** Daily 2-4 AM PST\n- **Development:** Continuous\n",
+    "chunk_index": 22,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT CALENDAR - Blackout Periods",
+    "chunk_id": "deployment_strategies.md_section_23",
+    "content": "### Blackout Periods\n- Black Friday week\n- Cyber Monday\n- End of quarter (last week)\n- Major holidays\n",
+    "chunk_index": 23,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "DEPLOYMENT CALENDAR - Release Schedule",
+    "chunk_id": "deployment_strategies.md_section_24",
+    "content": "### Release Schedule\n- **Major releases:** Quarterly\n- **Minor releases:** Bi-weekly\n- **Patches:** As needed\n- **Security fixes:** Immediate\n",
+    "chunk_index": 24,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "COMPLIANCE & AUDITING - Deployment Audit Trail",
+    "chunk_id": "deployment_strategies.md_section_25",
+    "content": "### Deployment Audit Trail\n- Who deployed\n- What was deployed\n- When it was deployed\n- Approval chain\n- Test results\n- Rollback capability\n",
+    "chunk_index": 25,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "COMPLIANCE & AUDITING - Compliance Requirements",
+    "chunk_id": "deployment_strategies.md_section_26",
+    "content": "### Compliance Requirements\n- SOC 2 Type II\n- GDPR Article 25\n- HIPAA (future)\n- ISO 27001\n",
+    "chunk_index": 26,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "COMPLIANCE & AUDITING - Change Management",
+    "chunk_id": "deployment_strategies.md_section_27",
+    "content": "### Change Management\n- CAB approval for production\n- Risk assessment required\n- Rollback plan mandatory\n- Post-deployment review\n",
+    "chunk_index": 27,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "BEST PRACTICES",
+    "chunk_id": "deployment_strategies.md_section_28",
+    "content": "## BEST PRACTICES\n\n1. Never deploy on Fridays\n2. Always have a rollback plan\n3. Monitor for 30 minutes post-deployment\n4. Keep deployment windows small\n5. Automate everything possible\n6. Document all procedures\n7. Practice disaster recovery quarterly\n8. Maintain deployment runbooks\n9. Use feature flags for risky changes\n10. Communicate early and often\n",
+    "chunk_index": 28,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "TROUBLESHOOTING GUIDE - Common Issues",
+    "chunk_id": "deployment_strategies.md_section_29",
+    "content": "### Common Issues\n\n#### 1. Deployment Stuck\n- Check pod events: `kubectl describe pod`\n- Review resource quotas\n- Check image pull secrets\n\n#### 2. Health Checks Failing\n- Verify endpoints\n- Check dependencies\n- Review timeout settings\n\n#### 3. Performance Degradation\n- Check resource limits\n- Review database queries\n- Analyze cache hit rates\n\n#### 4. Configuration Issues\n- Verify ConfigMaps\n- Check environment variables\n- Review secrets mounting\n",
+    "chunk_index": 29,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "Deployment Strategies",
+    "document_path": "documentation\\deployment_strategies.md",
+    "section_title": "CONTACTS",
+    "chunk_id": "deployment_strategies.md_section_30",
+    "content": "## CONTACTS\n\n**On-Call:** (555) 123-4567  \n**DevOps Lead:** t.anderson@enterprise.com  \n**Platform Team:** platform@enterprise.com  \n**Emergency:** page-oncall@enterprise.com\n\n---\n\n*For architecture details, see [Application Architecture](application_architecture.md) document.*  \n*For maintenance procedures, see [Housekeeping](housekeeping_maintenance.md) documentation.*",
+    "chunk_index": 30,
+    "total_chunks": 31
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "SYSTEM OVERVIEW FLOW",
+    "chunk_id": "high_level_flow.md_section_0",
+    "content": "## SYSTEM OVERVIEW FLOW\n\nThe Enterprise Knowledge Chatbot operates through a series of interconnected flows that handle user queries, document processing, and knowledge retrieval. This document outlines the primary flows within the system.\n",
+    "chunk_index": 0,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "1. USER INTERACTION FLOW - Step 1: User Access",
+    "chunk_id": "high_level_flow.md_section_1",
+    "content": "### Step 1: User Access\n- User navigates to chatbot URL\n- System loads frontend interface\n- Theme preferences are loaded from localStorage\n- User authentication (if required)\n",
+    "chunk_index": 1,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "1. USER INTERACTION FLOW - Step 2: Query Submission",
+    "chunk_id": "high_level_flow.md_section_2",
+    "content": "### Step 2: Query Submission\n- User types question in chat interface\n- Real-time validation of input\n- Query sent to backend API via POST request\n- Loading indicator displayed\n",
+    "chunk_index": 2,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "1. USER INTERACTION FLOW - Step 3: Response Generation",
+    "chunk_id": "high_level_flow.md_section_3",
+    "content": "### Step 3: Response Generation\n- Backend receives query\n- Query processed and embedded\n- Vector search performed\n- Context retrieved from knowledge base\n- LLM generates response\n- Response returned to frontend\n",
+    "chunk_index": 3,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "1. USER INTERACTION FLOW - Step 4: Display Results",
+    "chunk_id": "high_level_flow.md_section_4",
+    "content": "### Step 4: Display Results\n- Response rendered in chat interface\n- Source documents displayed\n- Links to original sources provided\n- Chat history updated\n",
+    "chunk_index": 4,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "2. DOCUMENT INDEXING FLOW - Step 1: Source Connection",
+    "chunk_id": "high_level_flow.md_section_5",
+    "content": "### Step 1: Source Connection\n- Administrator configures source (Confluence/Git)\n- Authentication credentials validated\n- Connection established\n",
+    "chunk_index": 5,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "2. DOCUMENT INDEXING FLOW - Step 2: Content Discovery",
+    "chunk_id": "high_level_flow.md_section_6",
+    "content": "### Step 2: Content Discovery\n- System crawls configured spaces/repositories\n- List of documents/files generated\n- Filtering rules applied\n- Queue created for processing\n",
+    "chunk_index": 6,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "2. DOCUMENT INDEXING FLOW - Step 3: Document Processing",
+    "chunk_id": "high_level_flow.md_section_7",
+    "content": "### Step 3: Document Processing\n- Documents fetched from source\n- Text extraction performed\n- Content cleaned and normalized\n- Metadata extracted\n",
+    "chunk_index": 7,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "2. DOCUMENT INDEXING FLOW - Step 4: Chunking Process",
+    "chunk_id": "high_level_flow.md_section_8",
+    "content": "### Step 4: Chunking Process\n- Documents split into chunks (1000 chars)\n- Overlap maintained (200 chars)\n- Chunk metadata preserved\n- Relationships tracked\n",
+    "chunk_index": 8,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "2. DOCUMENT INDEXING FLOW - Step 5: Embedding Generation",
+    "chunk_id": "high_level_flow.md_section_9",
+    "content": "### Step 5: Embedding Generation\n- Each chunk processed through embedding model\n- Vector representations created\n- Embeddings normalized\n- Quality checks performed\n",
+    "chunk_index": 9,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "2. DOCUMENT INDEXING FLOW - Step 6: Storage",
+    "chunk_id": "high_level_flow.md_section_10",
+    "content": "### Step 6: Storage\n- Vectors stored in FAISS index\n- Metadata stored in database\n- Mappings maintained\n- Index optimized\n",
+    "chunk_index": 10,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "3. SEARCH AND RETRIEVAL FLOW - Query Processing",
+    "chunk_id": "high_level_flow.md_section_11",
+    "content": "### Query Processing\n1. User query received\n2. Query preprocessing\n   - Spell checking\n   - Query expansion\n   - Intent detection\n",
+    "chunk_index": 11,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "3. SEARCH AND RETRIEVAL FLOW - Semantic Search",
+    "chunk_id": "high_level_flow.md_section_12",
+    "content": "### Semantic Search\n1. Query embedded using same model\n2. Vector similarity search\n3. Top-k results retrieved (k=5 default)\n4. Re-ranking based on metadata\n",
+    "chunk_index": 12,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "3. SEARCH AND RETRIEVAL FLOW - Context Assembly",
+    "chunk_id": "high_level_flow.md_section_13",
+    "content": "### Context Assembly\n1. Retrieved chunks analyzed\n2. Deduplication performed\n3. Context window constructed\n4. Source attribution added\n",
+    "chunk_index": 13,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "3. SEARCH AND RETRIEVAL FLOW - Response Generation",
+    "chunk_id": "high_level_flow.md_section_14",
+    "content": "### Response Generation\n1. Context + Query sent to LLM\n2. Prompt engineering applied\n3. Response generated\n4. Post-processing and formatting\n5. Citation links added\n",
+    "chunk_index": 14,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "4. THEME MANAGEMENT FLOW - Theme Selection",
+    "chunk_id": "high_level_flow.md_section_15",
+    "content": "### Theme Selection\n1. User clicks theme selector\n2. Available themes displayed\n3. User selects theme\n4. Theme ID sent to backend\n",
+    "chunk_index": 15,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "4. THEME MANAGEMENT FLOW - Theme Application",
+    "chunk_id": "high_level_flow.md_section_16",
+    "content": "### Theme Application\n1. CSS variables fetched from backend\n2. Existing theme removed\n3. New theme CSS injected\n4. Component styles updated\n5. Preference saved to localStorage\n",
+    "chunk_index": 16,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "4. THEME MANAGEMENT FLOW - Theme Persistence",
+    "chunk_id": "high_level_flow.md_section_17",
+    "content": "### Theme Persistence\n1. User ID retrieved/generated\n2. Theme preference sent to API\n3. Backend stores preference\n4. Database updated\n5. Confirmation returned\n",
+    "chunk_index": 17,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "5. CONFLUENCE INTEGRATION FLOW - Initial Setup",
+    "chunk_id": "high_level_flow.md_section_18",
+    "content": "### Initial Setup\n1. Confluence URL configured\n2. API credentials provided\n3. Connection tested\n4. Spaces discovered\n",
+    "chunk_index": 18,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "5. CONFLUENCE INTEGRATION FLOW - Space Indexing",
+    "chunk_id": "high_level_flow.md_section_19",
+    "content": "### Space Indexing\n1. Space selected for indexing\n2. All pages in space retrieved\n3. Page hierarchy maintained\n4. Content extracted\n5. Attachments processed\n",
+    "chunk_index": 19,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "5. CONFLUENCE INTEGRATION FLOW - Synchronization",
+    "chunk_id": "high_level_flow.md_section_20",
+    "content": "### Synchronization\n1. Webhook configured (optional)\n2. Changes detected\n3. Delta updates processed\n4. Index refreshed\n5. Cache invalidated\n",
+    "chunk_index": 20,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "6. GIT REPOSITORY FLOW - Repository Setup",
+    "chunk_id": "high_level_flow.md_section_21",
+    "content": "### Repository Setup\n1. Repository URL provided\n2. Authentication configured\n3. Clone/pull performed\n4. Branch selected\n",
+    "chunk_index": 21,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "6. GIT REPOSITORY FLOW - File Processing",
+    "chunk_id": "high_level_flow.md_section_22",
+    "content": "### File Processing\n1. Repository scanned\n2. Relevant files identified\n   - Markdown files\n   - Documentation\n   - README files\n   - Code comments\n3. Content extracted\n4. Structure preserved\n",
+    "chunk_index": 22,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "6. GIT REPOSITORY FLOW - Update Flow",
+    "chunk_id": "high_level_flow.md_section_23",
+    "content": "### Update Flow\n1. Periodic pull scheduled\n2. Changes detected\n3. Modified files re-indexed\n4. Deleted files removed\n5. New files added\n",
+    "chunk_index": 23,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "7. ERROR HANDLING FLOW - Error Detection",
+    "chunk_id": "high_level_flow.md_section_24",
+    "content": "### Error Detection\n1. Error occurs in any component\n2. Error logged with context\n3. Error category determined\n",
+    "chunk_index": 24,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "7. ERROR HANDLING FLOW - Error Response",
+    "chunk_id": "high_level_flow.md_section_25",
+    "content": "### Error Response\n1. User-friendly message generated\n2. Technical details logged\n3. Fallback behavior activated\n4. Administrator notified (if critical)\n",
+    "chunk_index": 25,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "7. ERROR HANDLING FLOW - Recovery Process",
+    "chunk_id": "high_level_flow.md_section_26",
+    "content": "### Recovery Process\n1. Automatic retry attempted\n2. Circuit breaker activated if needed\n3. Degraded mode enabled\n4. Manual intervention requested\n",
+    "chunk_index": 26,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "8. AUTHENTICATION FLOW - User Login",
+    "chunk_id": "high_level_flow.md_section_27",
+    "content": "### User Login\n1. User accesses application\n2. Redirect to OAuth provider\n3. User authenticates\n4. Authorization code received\n5. Token exchange performed\n6. User session created\n",
+    "chunk_index": 27,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "8. AUTHENTICATION FLOW - Session Management",
+    "chunk_id": "high_level_flow.md_section_28",
+    "content": "### Session Management\n1. Session token stored\n2. Token validated on each request\n3. Refresh token used when expired\n4. Logout clears session\n",
+    "chunk_index": 28,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "9. MONITORING FLOW - Metrics Collection",
+    "chunk_id": "high_level_flow.md_section_29",
+    "content": "### Metrics Collection\n1. Application metrics gathered\n2. Performance data collected\n3. Error rates tracked\n4. Usage statistics compiled\n",
+    "chunk_index": 29,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "9. MONITORING FLOW - Alert Flow",
+    "chunk_id": "high_level_flow.md_section_30",
+    "content": "### Alert Flow\n1. Thresholds monitored\n2. Alerts triggered\n3. Notifications sent\n4. Incident created\n5. Response team notified\n",
+    "chunk_index": 30,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "10. BACKUP AND RECOVERY FLOW - Backup Process",
+    "chunk_id": "high_level_flow.md_section_31",
+    "content": "### Backup Process\n1. Scheduled backup initiated\n2. Vector index snapshot created\n3. Database backed up\n4. Configuration exported\n5. Backup verified and stored\n",
+    "chunk_index": 31,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "10. BACKUP AND RECOVERY FLOW - Recovery Process",
+    "chunk_id": "high_level_flow.md_section_32",
+    "content": "### Recovery Process\n1. Failure detected\n2. Last valid backup identified\n3. Services stopped\n4. Data restored\n5. Services restarted\n6. Validation performed\n",
+    "chunk_index": 32,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "FLOW OPTIMIZATION STRATEGIES - 1. Caching Strategy",
+    "chunk_id": "high_level_flow.md_section_33",
+    "content": "### 1. Caching Strategy\n- Query results cached\n- Frequently accessed documents cached\n- Embedding cache maintained\n- TTL-based invalidation\n",
+    "chunk_index": 33,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "FLOW OPTIMIZATION STRATEGIES - 2. Parallel Processing",
+    "chunk_id": "high_level_flow.md_section_34",
+    "content": "### 2. Parallel Processing\n- Document processing parallelized\n- Batch embedding generation\n- Concurrent API calls\n- Async operations\n",
+    "chunk_index": 34,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "FLOW OPTIMIZATION STRATEGIES - 3. Load Balancing",
+    "chunk_id": "high_level_flow.md_section_35",
+    "content": "### 3. Load Balancing\n- Request distribution\n- Resource allocation\n- Queue management\n- Auto-scaling triggers\n",
+    "chunk_index": 35,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "PERFORMANCE METRICS - Target Metrics",
+    "chunk_id": "high_level_flow.md_section_36",
+    "content": "### Target Metrics\n- **Query response time:** < 2 seconds\n- **Document indexing:** 100 docs/minute\n- **Concurrent users:** 1000+\n- **Uptime:** 99.9%\n- **Index accuracy:** > 95%\n",
+    "chunk_index": 36,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "High Level Flow",
+    "document_path": "documentation\\high_level_flow.md",
+    "section_title": "TROUBLESHOOTING GUIDE - Common Issues",
+    "chunk_id": "high_level_flow.md_section_37",
+    "content": "### Common Issues\n\n#### 1. Slow response times\n- Check vector index size\n- Verify cache hit rate\n- Monitor API latency\n\n#### 2. Indexing failures\n- Validate source connectivity\n- Check authentication\n- Review error logs\n\n#### 3. Incorrect results\n- Verify embedding model\n- Check chunking strategy\n- Review context window\n\n---\n\n*For detailed technical implementation, refer to the [Technical Stack](technology_stack.md) documentation.*  \n*For deployment procedures, see the [Deployment Strategies](deployment_strategies.md) documentation.*",
+    "chunk_index": 37,
+    "total_chunks": 38
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "OVERVIEW",
+    "chunk_id": "housekeeping_maintenance.md_section_0",
+    "content": "## OVERVIEW\n\nThis document outlines all housekeeping and maintenance procedures required to keep the Enterprise Knowledge Chatbot running optimally. It includes routine maintenance tasks, cleanup procedures, optimization strategies, and preventive maintenance schedules.\n",
+    "chunk_index": 0,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "DAILY MAINTENANCE TASKS - MORNING CHECKS (9:00 AM PST)",
+    "chunk_id": "housekeeping_maintenance.md_section_1",
+    "content": "### MORNING CHECKS (9:00 AM PST)\n\n#### System Health Dashboard Review\n- ✅ Check all services are green\n- ✅ Verify no overnight alerts\n- ✅ Review error rates from past 24h\n- ✅ Check disk space utilization\n\n#### Database Health\n- Active connections count (should be < 80% of max)\n- Long-running queries (> 5 seconds)\n- Replication lag (< 1 second)\n- Dead tuples percentage\n\n#### Cache Status\n- Redis memory usage (< 75%)\n- Cache hit ratio (> 90%)\n- Eviction rate monitoring\n- Key expiration status\n\n#### Log Review\n- Error log scan for patterns\n- Security event review\n- Failed authentication attempts\n- API rate limit violations\n\n**Automation Script:**\n```bash\n#!/bin/bash\n# Daily health check script\n./scripts/health-check.sh --full\n./scripts/log-analyzer.sh --last-24h\n./scripts/cache-stats.sh\n```\n",
+    "chunk_index": 1,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "DAILY MAINTENANCE TASKS - EVENING TASKS (6:00 PM PST)",
+    "chunk_id": "housekeeping_maintenance.md_section_2",
+    "content": "### EVENING TASKS (6:00 PM PST)\n\n#### Backup Verification\n- ✅ Confirm automated backups completed\n- ✅ Verify backup integrity\n- ✅ Check backup size trends\n- ✅ Test restore procedure (Fridays only)\n\n#### Performance Metrics\n- Review day's performance graphs\n- Identify any degradation trends\n- Document unusual patterns\n- Update capacity planning data\n",
+    "chunk_index": 2,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "WEEKLY MAINTENANCE - MONDAY - CLEANUP DAY",
+    "chunk_id": "housekeeping_maintenance.md_section_3",
+    "content": "### MONDAY - CLEANUP DAY\n\n**Task:** Old Data Cleanup\n- Remove chat logs older than 90 days\n- Archive completed conversations\n- Purge temporary files\n- Clean up failed job logs\n\n**Script:**\n```python\n# Weekly cleanup script\ndef weekly_cleanup():\n    cleanup_old_logs(days=90)\n    archive_conversations(days=30)\n    vacuum_database()\n    optimize_indices()\n```\n",
+    "chunk_index": 3,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "WEEKLY MAINTENANCE - TUESDAY - SECURITY DAY",
+    "chunk_id": "housekeeping_maintenance.md_section_4",
+    "content": "### TUESDAY - SECURITY DAY\n\n**Task:** Security Maintenance\n- Review access logs\n- Update security patches\n- Rotate API keys (monthly)\n- Audit user permissions\n- Check for CVEs in dependencies\n\n**Checklist:**\n- ✅ Run vulnerability scanner\n- ✅ Review firewall rules\n- ✅ Check SSL certificate expiry\n- ✅ Update WAF rules\n- ✅ Review OAuth tokens\n",
+    "chunk_index": 4,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "WEEKLY MAINTENANCE - WEDNESDAY - OPTIMIZATION DAY",
+    "chunk_id": "housekeeping_maintenance.md_section_5",
+    "content": "### WEDNESDAY - OPTIMIZATION DAY\n\n**Task:** Performance Tuning\n- Analyze slow queries\n- Optimize database indices\n- Review and adjust cache policies\n- Clean up unused Docker images\n- Defragment vector indices\n\n**FAISS Index Optimization:**\n```python\n# Optimize FAISS index\nimport faiss\n\ndef optimize_faiss_index():\n    index = faiss.read_index(\"vector.index\")\n    index.add_with_ids(vectors, ids)\n    \n    # Retrain index for better performance\n    index.train(training_vectors)\n    \n    # Save optimized index\n    faiss.write_index(index, \"vector_optimized.index\")\n```\n",
+    "chunk_index": 5,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "WEEKLY MAINTENANCE - THURSDAY - UPDATE DAY",
+    "chunk_id": "housekeeping_maintenance.md_section_6",
+    "content": "### THURSDAY - UPDATE DAY\n\n**Task:** System Updates\n- Apply OS security patches\n- Update Docker base images\n- Upgrade pip packages (non-breaking)\n- Update documentation\n- Refresh test data\n\n**Update Procedure:**\n1. Create system snapshot\n2. Apply updates to staging first\n3. Monitor for 2 hours\n4. Apply to production\n5. Verify all services\n",
+    "chunk_index": 6,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "WEEKLY MAINTENANCE - FRIDAY - BACKUP & RECOVERY",
+    "chunk_id": "housekeeping_maintenance.md_section_7",
+    "content": "### FRIDAY - BACKUP & RECOVERY\n\n**Task:** Backup and DR Testing\n- Full system backup\n- Test restore procedures\n- Update disaster recovery docs\n- Verify off-site backups\n- Practice failover (monthly)\n\n**Backup Checklist:**\n- ✅ Database full backup\n- ✅ Vector index snapshot\n- ✅ Configuration backup\n- ✅ Document store backup\n- ✅ Secret/credential backup\n",
+    "chunk_index": 7,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "MONTHLY MAINTENANCE - FIRST MONDAY - CAPACITY PLANNING",
+    "chunk_id": "housekeeping_maintenance.md_section_8",
+    "content": "### FIRST MONDAY - CAPACITY PLANNING\n\n**Review Metrics:**\n- Storage growth rate\n- Memory utilization trends\n- CPU usage patterns\n- Network bandwidth usage\n- User growth projections\n\n**Capacity Report Template:**\n- **Current Usage:** X%\n- **Growth Rate:** Y% per month\n- **Projected Full:** Z months\n- **Recommendation:** Scale up/out\n- **Budget Impact:** $\n",
+    "chunk_index": 8,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "MONTHLY MAINTENANCE - SECOND TUESDAY - DEPENDENCY UPDATES",
+    "chunk_id": "housekeeping_maintenance.md_section_9",
+    "content": "### SECOND TUESDAY - DEPENDENCY UPDATES\n\n**Major Updates:**\n- Python package updates\n- Framework upgrades\n- Security patches\n- Library updates\n- Docker image updates\n\n**Update Strategy:**\n1. Review changelog\n2. Test in development\n3. Run regression tests\n4. Stage for 1 week\n5. Deploy to production\n",
+    "chunk_index": 9,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "MONTHLY MAINTENANCE - THIRD WEDNESDAY - DOCUMENTATION",
+    "chunk_id": "housekeeping_maintenance.md_section_10",
+    "content": "### THIRD WEDNESDAY - DOCUMENTATION\n\n**Documentation Review:**\n- Update runbooks\n- Refresh architecture diagrams\n- Update contact lists\n- Review SOP documents\n- Update knowledge base\n\n**Areas to Document:**\n- ✅ New features added\n- ✅ Configuration changes\n- ✅ Troubleshooting guides\n- ✅ Performance baselines\n- ✅ Incident post-mortems\n",
+    "chunk_index": 10,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "MONTHLY MAINTENANCE - FOURTH THURSDAY - COMPLIANCE",
+    "chunk_id": "housekeeping_maintenance.md_section_11",
+    "content": "### FOURTH THURSDAY - COMPLIANCE\n\n**Compliance Checks:**\n- Data retention policies\n- GDPR compliance\n- Access audit logs\n- Security controls\n- License compliance\n\n**Audit Checklist:**\n- ✅ User data handling\n- ✅ Encryption status\n- ✅ Access controls\n- ✅ Audit trails\n- ✅ Policy compliance\n",
+    "chunk_index": 11,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "DATABASE MAINTENANCE - POSTGRESQL MAINTENANCE",
+    "chunk_id": "housekeeping_maintenance.md_section_12",
+    "content": "### POSTGRESQL MAINTENANCE\n\n**Daily:**\n- Monitor connection pools\n- Check for lock conflicts\n- Review slow query log\n\n**Weekly:**\n```sql\n-- Vacuum and analyze\nVACUUM ANALYZE;\n\n-- Reindex if needed\nREINDEX DATABASE chatbot_db;\n\n-- Update statistics\nANALYZE;\n```\n\n**Monthly:**\n```sql\n-- Full vacuum (maintenance window required)\nVACUUM FULL;\n\n-- Check for bloat\nSELECT schemaname, tablename, \n       pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS size\nFROM pg_tables \nORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;\n```\n",
+    "chunk_index": 12,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "DATABASE MAINTENANCE - INDEX MAINTENANCE",
+    "chunk_id": "housekeeping_maintenance.md_section_13",
+    "content": "### INDEX MAINTENANCE\n\n**Vector Index:**\n- Weekly retraining\n- Monthly optimization\n- Quarterly rebuild\n\n**Search Index:**\n- Daily incremental updates\n- Weekly full reindex\n- Monthly optimization\n",
+    "chunk_index": 13,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "CACHE MAINTENANCE - REDIS MAINTENANCE",
+    "chunk_id": "housekeeping_maintenance.md_section_14",
+    "content": "### REDIS MAINTENANCE\n\n**Daily Tasks:**\n```bash\n# Monitor memory\nredis-cli INFO memory\n\n# Check persistence\nredis-cli LASTSAVE\n\n# Monitor slow commands\nredis-cli SLOWLOG GET 10\n```\n\n**Weekly Tasks:**\n```bash\n# Analyze key patterns\nredis-cli --scan --pattern '*' | head -20\n\n# Clean expired keys\nredis-cli FLUSHDB ASYNC\n\n# Optimize memory\nredis-cli MEMORY DOCTOR\n```\n",
+    "chunk_index": 14,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "CACHE MAINTENANCE - CACHE WARMING",
+    "chunk_id": "housekeeping_maintenance.md_section_15",
+    "content": "### CACHE WARMING\n\n**After Restart:**\n1. Load frequently used queries\n2. Populate user session cache\n3. Load configuration cache\n4. Warm embedding cache\n\n**Script:**\n```python\ndef warm_cache():\n    # Load top 100 queries\n    for query in get_top_queries(100):\n        cache.set(query.key, query.result)\n    \n    # Load active sessions\n    for session in get_active_sessions():\n        cache.set(session.key, session.data)\n```\n",
+    "chunk_index": 15,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "LOG MANAGEMENT - LOG ROTATION",
+    "chunk_id": "housekeeping_maintenance.md_section_16",
+    "content": "### LOG ROTATION\n\n**Configuration:**\n```yaml\n/var/log/chatbot/*.log {\n    daily\n    rotate 30\n    compress\n    delaycompress\n    notifempty\n    create 0640 chatbot chatbot\n    sharedscripts\n    postrotate\n        systemctl reload chatbot\n    endscript\n}\n```\n",
+    "chunk_index": 16,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "LOG MANAGEMENT - LOG AGGREGATION",
+    "chunk_id": "housekeeping_maintenance.md_section_17",
+    "content": "### LOG AGGREGATION\n\n**ELK Stack Maintenance:**\n- Daily: Check cluster health\n- Weekly: Optimize indices\n- Monthly: Archive old logs\n- Quarterly: Upgrade stack\n\n**Elasticsearch Cleanup:**\n```bash\n# Delete indices older than 30 days\ncurator delete indices --older-than 30 --time-unit days\n\n# Optimize indices\ncurator optimize --max_num_segments 1\n\n# Snapshot old data\ncurator snapshot --repository s3_backup\n```\n",
+    "chunk_index": 17,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "MONITORING MAINTENANCE - PROMETHEUS MAINTENANCE",
+    "chunk_id": "housekeeping_maintenance.md_section_18",
+    "content": "### PROMETHEUS MAINTENANCE\n\n**Storage Management:**\n- Retention: 30 days\n- Compaction: Every 2 hours\n- Backup: Daily to S3\n\n**Maintenance Tasks:**\n```bash\n# Check storage usage\nprometheus_tsdb_storage_blocks_total\n\n# Compact blocks\npromtool tsdb compact /prometheus\n\n# Verify config\npromtool check config /etc/prometheus/prometheus.yml\n```\n",
+    "chunk_index": 18,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "MONITORING MAINTENANCE - GRAFANA MAINTENANCE",
+    "chunk_id": "housekeeping_maintenance.md_section_19",
+    "content": "### GRAFANA MAINTENANCE\n\n**Dashboard Management:**\n- Export dashboards weekly\n- Version control changes\n- Update alert thresholds\n- Clean unused dashboards\n\n**Alert Maintenance:**\n- Review alert fatigue\n- Tune thresholds\n- Update contact lists\n- Test alert channels\n",
+    "chunk_index": 19,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "SECURITY MAINTENANCE - CERTIFICATE MANAGEMENT",
+    "chunk_id": "housekeeping_maintenance.md_section_20",
+    "content": "### CERTIFICATE MANAGEMENT\n\n**SSL/TLS Certificates:**\n- Check expiry 30 days ahead\n- Auto-renewal via Let's Encrypt\n- Backup certificates\n- Update cipher suites\n\n**Certificate Renewal:**\n```bash\n# Check certificate expiry\nopenssl x509 -enddate -noout -in cert.pem\n\n# Renew certificate\ncertbot renew --force-renewal\n\n# Verify renewal\nopenssl x509 -dates -noout -in /path/to/cert.pem\n```\n",
+    "chunk_index": 20,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "SECURITY MAINTENANCE - SECRET ROTATION",
+    "chunk_id": "housekeeping_maintenance.md_section_21",
+    "content": "### SECRET ROTATION\n\n**Rotation Schedule:**\n- API Keys: Every 90 days\n- Database passwords: Every 180 days\n- OAuth tokens: Every 30 days\n- Service accounts: Every 365 days\n\n**Vault Maintenance:**\n```bash\n# Rotate secrets\nvault operator rotate\n\n# Rekey vault\nvault operator rekey -init\n\n# Audit secret access\nvault audit list\n```\n",
+    "chunk_index": 21,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "PERFORMANCE OPTIMIZATION - QUERY OPTIMIZATION",
+    "chunk_id": "housekeeping_maintenance.md_section_22",
+    "content": "### QUERY OPTIMIZATION\n\n**Weekly Review:**\n1. Identify slow queries\n2. Analyze execution plans\n3. Add/modify indices\n4. Rewrite inefficient queries\n5. Update statistics\n\n**Query Analysis:**\n```sql\n-- Find slow queries\nSELECT query, mean_exec_time, calls\nFROM pg_stat_statements\nWHERE mean_exec_time > 1000\nORDER BY mean_exec_time DESC\nLIMIT 10;\n```\n",
+    "chunk_index": 22,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "PERFORMANCE OPTIMIZATION - RESOURCE OPTIMIZATION",
+    "chunk_id": "housekeeping_maintenance.md_section_23",
+    "content": "### RESOURCE OPTIMIZATION\n\n**Memory Management:**\n- Adjust heap sizes\n- Tune garbage collection\n- Optimize cache sizes\n- Review memory leaks\n\n**CPU Optimization:**\n- Thread pool tuning\n- Process affinity\n- Load balancing\n- Async processing\n",
+    "chunk_index": 23,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "TROUBLESHOOTING PROCEDURES - COMMON ISSUES",
+    "chunk_id": "housekeeping_maintenance.md_section_24",
+    "content": "### COMMON ISSUES\n\n#### 1. High Memory Usage\n- Check for memory leaks\n- Review cache configuration\n- Analyze heap dumps\n- Restart services if needed\n\n#### 2. Slow Response Times\n- Check database performance\n- Review network latency\n- Analyze cache hit rates\n- Check external API delays\n\n#### 3. Index Corruption\n- Verify index integrity\n- Rebuild if necessary\n- Restore from backup\n- Re-index documents\n\n#### 4. Connection Pool Exhaustion\n- Increase pool size\n- Check for connection leaks\n- Review timeout settings\n- Implement circuit breaker\n",
+    "chunk_index": 24,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "TROUBLESHOOTING PROCEDURES - EMERGENCY PROCEDURES",
+    "chunk_id": "housekeeping_maintenance.md_section_25",
+    "content": "### EMERGENCY PROCEDURES\n\n**Service Down:**\n1. Check service status\n2. Review error logs\n3. Restart service\n4. Verify dependencies\n5. Escalate if needed\n\n**Data Corruption:**\n1. Stop writes immediately\n2. Assess damage extent\n3. Restore from backup\n4. Verify data integrity\n5. Document incident\n",
+    "chunk_index": 25,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "PREVENTIVE MAINTENANCE - HEALTH CHECKS",
+    "chunk_id": "housekeeping_maintenance.md_section_26",
+    "content": "### HEALTH CHECKS\n\n**Automated Checks:**\n- Service availability\n- Response time\n- Error rates\n- Resource usage\n- Dependency status\n\n**Manual Checks:**\n- User experience test\n- Feature validation\n- Security scan\n- Performance baseline\n- Backup verification\n",
+    "chunk_index": 26,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "PREVENTIVE MAINTENANCE - CAPACITY MONITORING",
+    "chunk_id": "housekeeping_maintenance.md_section_27",
+    "content": "### CAPACITY MONITORING\n\n**Thresholds:**\n- **CPU:** Alert at 70%, Critical at 85%\n- **Memory:** Alert at 75%, Critical at 90%\n- **Disk:** Alert at 80%, Critical at 95%\n- **Network:** Alert at 70%, Critical at 85%\n",
+    "chunk_index": 27,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "MAINTENANCE WINDOWS",
+    "chunk_id": "housekeeping_maintenance.md_section_28",
+    "content": "## MAINTENANCE WINDOWS\n\n**Scheduled Windows:**\n- **Daily:** 2-3 AM PST (logs, cache)\n- **Weekly:** Sunday 1-5 AM PST\n- **Monthly:** First Sunday 12-6 AM PST\n- **Quarterly:** Announced 2 weeks ahead\n\n**Emergency Maintenance:**\n- Notify users immediately\n- Minimum 30-minute warning\n- Update status page\n- Post-maintenance report\n",
+    "chunk_index": 28,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "DOCUMENTATION REQUIREMENTS",
+    "chunk_id": "housekeeping_maintenance.md_section_29",
+    "content": "## DOCUMENTATION REQUIREMENTS\n\n**Maintenance Logs:**\n- Date and time\n- Tasks performed\n- Issues encountered\n- Resolution steps\n- Time to complete\n\n**Monthly Reports:**\n- System availability\n- Performance metrics\n- Capacity trends\n- Incident summary\n- Improvement recommendations\n",
+    "chunk_index": 29,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "TOOLS AND SCRIPTS",
+    "chunk_id": "housekeeping_maintenance.md_section_30",
+    "content": "## TOOLS AND SCRIPTS\n\n**Essential Scripts:**\n- `health-check.sh`\n- `backup-verify.py`\n- `cleanup-logs.sh`\n- `optimize-db.sql`\n- `cache-warm.py`\n- `index-rebuild.sh`\n\n**Monitoring Tools:**\n- Prometheus + Grafana\n- ELK Stack\n- New Relic\n- PagerDuty\n- Datadog\n",
+    "chunk_index": 30,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "Housekeeping Maintenance",
+    "document_path": "documentation\\housekeeping_maintenance.md",
+    "section_title": "CONTACTS",
+    "chunk_id": "housekeeping_maintenance.md_section_31",
+    "content": "## CONTACTS\n\n**Maintenance Team:**\n- **Primary:** maintenance@enterprise.com\n- **On-call:** (555) 123-4567\n- **Escalation:** ops-lead@enterprise.com\n\n**Vendor Support:**\n- **AWS:** Premium support\n- **Database:** 24/7 support\n- **Monitoring:** Business hours\n\n---\n\n*For deployment procedures, see [Deployment Strategies](deployment_strategies.md) document.*  \n*For architecture details, see [Application Architecture](application_architecture.md) document.*",
+    "chunk_index": 31,
+    "total_chunks": 32
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ORGANIZATIONAL STRUCTURE - EXECUTIVE SPONSORS",
+    "chunk_id": "people_and_teams.md_section_0",
+    "content": "### EXECUTIVE SPONSORS\n\n#### Chief Technology Officer (CTO)\n- **Name:** Alexandra Chen\n- **Email:** a.chen@enterprise.com\n- **Responsibility:** Strategic vision, budget approval\n- **Slack:** @alexchen\n\n#### Chief Information Officer (CIO)\n- **Name:** Marcus Williams\n- **Email:** m.williams@enterprise.com\n- **Responsibility:** IT strategy alignment\n- **Slack:** @marcusw\n",
+    "chunk_index": 0,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ORGANIZATIONAL STRUCTURE - PRODUCT LEADERSHIP",
+    "chunk_id": "people_and_teams.md_section_1",
+    "content": "### PRODUCT LEADERSHIP\n\n#### Product Director\n- **Name:** Sarah Johnson\n- **Email:** s.johnson@enterprise.com\n- **Location:** San Francisco, CA\n- **Responsibility:** Product strategy, roadmap\n- **Slack:** @sarahj\n- **Office Hours:** Tuesdays 2-3 PM PST\n\n#### Senior Product Manager\n- **Name:** Jennifer Martinez\n- **Email:** j.martinez@enterprise.com\n- **Location:** New York, NY\n- **Responsibility:** Feature prioritization, user research\n- **Slack:** @jenmartinez\n- **Direct Reports:** 2 Product Analysts\n",
+    "chunk_index": 1,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ENGINEERING TEAMS - TEAM 1: CORE PLATFORM",
+    "chunk_id": "people_and_teams.md_section_2",
+    "content": "### TEAM 1: CORE PLATFORM\n\n**Team Lead:** David Kim\n- **Email:** d.kim@enterprise.com\n- **Location:** Seattle, WA\n- **Slack:** @davidkim\n- **Years with Company:** 6\n\n**Team Members:**\n\n#### 1. Sarah Thompson - Senior Backend Engineer\n- **Expertise:** Python, Flask, Microservices\n- **Projects:** API development, scaling\n- **GitHub:** @sthompson\n\n#### 2. Michael Chen - Backend Engineer\n- **Expertise:** Database optimization, PostgreSQL\n- **Projects:** Query optimization, caching\n- **GitHub:** @mchen\n\n#### 3. Emily Rodriguez - Full Stack Engineer\n- **Expertise:** React, Python, DevOps\n- **Projects:** Admin dashboard, monitoring\n- **GitHub:** @erodriguez\n\n#### 4. James Wilson - Junior Developer\n- **Expertise:** Python, learning ML\n- **Projects:** Bug fixes, documentation\n- **GitHub:** @jwilson\n- **Mentor:** Sarah Thompson\n",
+    "chunk_index": 2,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ENGINEERING TEAMS - TEAM 2: AI/ML ENGINEERING",
+    "chunk_id": "people_and_teams.md_section_3",
+    "content": "### TEAM 2: AI/ML ENGINEERING\n\n**Team Lead:** Dr. Priya Patel\n- **Email:** p.patel@enterprise.com\n- **Location:** Boston, MA\n- **Slack:** @priyap\n- **Background:** PhD in Machine Learning, MIT\n\n**Team Members:**\n\n#### 1. Robert Zhang - Senior ML Engineer\n- **Expertise:** NLP, Transformers, PyTorch\n- **Projects:** Model training, fine-tuning\n- **Publications:** 5 papers on NLP\n- **GitHub:** @rzhang\n\n#### 2. Lisa Anderson - ML Engineer\n- **Expertise:** Vector databases, embeddings\n- **Projects:** FAISS optimization, search\n- **GitHub:** @landerson\n\n#### 3. Ahmed Hassan - Data Scientist\n- **Expertise:** Data analysis, model evaluation\n- **Projects:** Metrics, A/B testing\n- **GitHub:** @ahassan\n\n#### 4. Maria Gonzalez - ML Ops Engineer\n- **Expertise:** Model deployment, monitoring\n- **Projects:** MLflow, Kubeflow\n- **GitHub:** @mgonzalez\n",
+    "chunk_index": 3,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ENGINEERING TEAMS - TEAM 3: FRONTEND & UX",
+    "chunk_id": "people_and_teams.md_section_4",
+    "content": "### TEAM 3: FRONTEND & UX\n\n**Team Lead:** Jessica Brown\n- **Email:** j.brown@enterprise.com\n- **Location:** Austin, TX\n- **Slack:** @jessicab\n- **Portfolio:** design.jessicabrown.com\n\n**Team Members:**\n\n#### 1. Kevin Lee - Senior Frontend Engineer\n- **Expertise:** React, TypeScript, Performance\n- **Projects:** Chat interface, real-time updates\n- **GitHub:** @kevinlee\n\n#### 2. Amanda White - UX Designer\n- **Expertise:** User research, prototyping\n- **Projects:** User journey, wireframes\n- **Dribbble:** @amandawhite\n\n#### 3. Carlos Mendez - Frontend Engineer\n- **Expertise:** CSS, animations, accessibility\n- **Projects:** Theme system, responsive design\n- **GitHub:** @cmendez\n\n#### 4. Rachel Green - UI Designer\n- **Expertise:** Visual design, design systems\n- **Projects:** Component library, themes\n- **Figma:** @rachelgreen\n",
+    "chunk_index": 4,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ENGINEERING TEAMS - TEAM 4: INFRASTRUCTURE & DEVOPS",
+    "chunk_id": "people_and_teams.md_section_5",
+    "content": "### TEAM 4: INFRASTRUCTURE & DEVOPS\n\n**Team Lead:** Thomas Anderson\n- **Email:** t.anderson@enterprise.com\n- **Location:** Denver, CO\n- **Slack:** @tanderson\n- **Certifications:** AWS Solutions Architect, CKA\n\n**Team Members:**\n\n#### 1. William Davis - Senior DevOps Engineer\n- **Expertise:** Kubernetes, Terraform, AWS\n- **Projects:** Infrastructure as code\n- **GitHub:** @wdavis\n\n#### 2. Olivia Martin - Site Reliability Engineer\n- **Expertise:** Monitoring, incident response\n- **Projects:** Prometheus, Grafana setup\n- **On-call Schedule:** Week 1 of month\n- **GitHub:** @omartin\n\n#### 3. Christopher Taylor - Cloud Architect\n- **Expertise:** AWS, Azure, GCP\n- **Projects:** Multi-cloud strategy\n- **Certifications:** 3x AWS, 2x Azure\n- **GitHub:** @ctaylor\n\n#### 4. Nathan Phillips - DevOps Engineer\n- **Expertise:** CI/CD, Jenkins, GitLab\n- **Projects:** Pipeline automation\n- **GitHub:** @nphillips\n",
+    "chunk_index": 5,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "SUPPORT TEAMS - QUALITY ASSURANCE",
+    "chunk_id": "people_and_teams.md_section_6",
+    "content": "### QUALITY ASSURANCE\n\n**QA Lead:** Michelle Robinson\n- **Email:** m.robinson@enterprise.com\n- **Team Size:** 4 engineers\n\n**Responsibilities:**\n- Test automation\n- Performance testing\n- Security testing\n- User acceptance testing\n",
+    "chunk_index": 6,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "SUPPORT TEAMS - TECHNICAL WRITING",
+    "chunk_id": "people_and_teams.md_section_7",
+    "content": "### TECHNICAL WRITING\n\n**Documentation Lead:** Brian Foster\n- **Email:** b.foster@enterprise.com\n- **Team Size:** 2 writers\n\n**Responsibilities:**\n- API documentation\n- User guides\n- Release notes\n- Video tutorials\n",
+    "chunk_index": 7,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "SUPPORT TEAMS - CUSTOMER SUCCESS",
+    "chunk_id": "people_and_teams.md_section_8",
+    "content": "### CUSTOMER SUCCESS\n\n**Success Manager:** Patricia Hughes\n- **Email:** p.hughes@enterprise.com\n- **Team Size:** 3 representatives\n\n**Responsibilities:**\n- User onboarding\n- Training sessions\n- Feedback collection\n- Success metrics\n",
+    "chunk_index": 8,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "SUPPORT TEAMS - INFORMATION SECURITY",
+    "chunk_id": "people_and_teams.md_section_9",
+    "content": "### INFORMATION SECURITY\n\n**Security Lead:** Daniel Martinez\n- **Email:** d.martinez@enterprise.com\n- **Certifications:** CISSP, CEH\n\n**Responsibilities:**\n- Security reviews\n- Compliance audits\n- Incident response\n- Access management\n",
+    "chunk_index": 9,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "COMMUNICATION CHANNELS - Primary Channels",
+    "chunk_id": "people_and_teams.md_section_10",
+    "content": "### Primary Channels\n\n#### 1. Slack Workspace\n**URL:** enterprise-chatbot.slack.com\n\n**Channels:**\n- `#general` - Announcements\n- `#dev-backend` - Backend development\n- `#dev-frontend` - Frontend development\n- `#ml-team` - Machine learning\n- `#incidents` - Production issues\n- `#random` - Team bonding\n\n#### 2. Email Lists\n- chatbot-all@enterprise.com\n- chatbot-dev@enterprise.com\n- chatbot-oncall@enterprise.com\n\n#### 3. Meeting Cadence\n- **Daily Standup:** 9:30 AM PST\n- **Sprint Planning:** Biweekly Mondays\n- **Retrospectives:** Biweekly Fridays\n- **All Hands:** Monthly first Tuesday\n",
+    "chunk_index": 10,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "TEAM METRICS - Team Size: 35 people",
+    "chunk_id": "people_and_teams.md_section_11",
+    "content": "### Team Size: 35 people\n- **Engineering:** 20\n- **Product:** 3\n- **Design:** 4\n- **QA:** 4\n- **DevOps:** 4\n",
+    "chunk_index": 11,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "TEAM METRICS - Geographic Distribution",
+    "chunk_id": "people_and_teams.md_section_12",
+    "content": "### Geographic Distribution\n- **San Francisco:** 40%\n- **New York:** 20%\n- **Seattle:** 15%\n- **Remote:** 25%\n",
+    "chunk_index": 12,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "TEAM METRICS - Diversity Metrics",
+    "chunk_id": "people_and_teams.md_section_13",
+    "content": "### Diversity Metrics\n- **Gender:** 45% women, 55% men\n- **International:** 12 countries represented\n- **Languages:** 8 languages spoken\n",
+    "chunk_index": 13,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ESCALATION MATRIX - Level 1 (Immediate)",
+    "chunk_id": "people_and_teams.md_section_14",
+    "content": "### Level 1 (Immediate)\n- **Contact:** On-call Engineer\n- **Response Time:** 15 minutes\n- **Channel:** Slack #incidents\n",
+    "chunk_index": 14,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ESCALATION MATRIX - Level 2 (1 hour)",
+    "chunk_id": "people_and_teams.md_section_15",
+    "content": "### Level 2 (1 hour)\n- **Contact:** Team Lead\n- **Response Time:** 1 hour\n- **Method:** Phone escalation\n",
+    "chunk_index": 15,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ESCALATION MATRIX - Level 3 (2 hours)",
+    "chunk_id": "people_and_teams.md_section_16",
+    "content": "### Level 3 (2 hours)\n- **Contact:** Engineering Manager\n- **Response Time:** 2 hours\n- **Action:** Executive involvement\n",
+    "chunk_index": 16,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ESCALATION MATRIX - Level 4 (4 hours)",
+    "chunk_id": "people_and_teams.md_section_17",
+    "content": "### Level 4 (4 hours)\n- **Contact:** CTO/CIO\n- **Response Time:** 4 hours\n- **Action:** Crisis management\n",
+    "chunk_index": 17,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ON-CALL ROTATION - Schedule",
+    "chunk_id": "people_and_teams.md_section_18",
+    "content": "### Schedule\n- **Week 1:** Infrastructure Team\n- **Week 2:** Backend Team\n- **Week 3:** ML Team\n- **Week 4:** Frontend Team\n",
+    "chunk_index": 18,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ON-CALL ROTATION - On-Call Responsibilities",
+    "chunk_id": "people_and_teams.md_section_19",
+    "content": "### On-Call Responsibilities\n- **Primary:** First responder\n- **Secondary:** Backup support\n- **Handoff:** Mondays at 9 AM PST\n- **Compensation:** Time off in lieu\n",
+    "chunk_index": 19,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "TEAM CULTURE & VALUES - Core Values",
+    "chunk_id": "people_and_teams.md_section_20",
+    "content": "### Core Values\n1. **User First** - Every decision considers user impact\n2. **Innovation** - Embrace new technologies\n3. **Collaboration** - Work together, succeed together\n4. **Quality** - Excellence in everything we do\n5. **Learning** - Continuous improvement mindset\n",
+    "chunk_index": 20,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "TEAM CULTURE & VALUES - Team Events",
+    "chunk_id": "people_and_teams.md_section_21",
+    "content": "### Team Events\n- Weekly Tech Talks (Fridays 3 PM)\n- Monthly Team Lunch\n- Quarterly Hackathons\n- Annual Team Offsite\n",
+    "chunk_index": 21,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "TEAM CULTURE & VALUES - Recognition Programs",
+    "chunk_id": "people_and_teams.md_section_22",
+    "content": "### Recognition Programs\n- MVP of the Month\n- Innovation Award (Quarterly)\n- Peer Recognition System\n- Spot Bonuses\n",
+    "chunk_index": 22,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "PROFESSIONAL DEVELOPMENT",
+    "chunk_id": "people_and_teams.md_section_23",
+    "content": "## PROFESSIONAL DEVELOPMENT\n\n**Training Budget:** $2,000 per person/year\n",
+    "chunk_index": 23,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "PROFESSIONAL DEVELOPMENT - Learning Resources",
+    "chunk_id": "people_and_teams.md_section_24",
+    "content": "### Learning Resources\n- Udemy Business account\n- O'Reilly Learning platform\n- Conference attendance (2/year)\n- Internal mentorship program\n- 20% time for learning\n",
+    "chunk_index": 24,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "PROFESSIONAL DEVELOPMENT - Career Paths",
+    "chunk_id": "people_and_teams.md_section_25",
+    "content": "### Career Paths\n- **IC Track:** Engineer → Senior → Staff → Principal\n- **Management:** Senior → Lead → Manager → Director\n",
+    "chunk_index": 25,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ONBOARDING PROCESS - Week 1",
+    "chunk_id": "people_and_teams.md_section_26",
+    "content": "### Week 1\n- **Day 1:** IT setup, account creation\n- **Day 2:** Product overview, demos\n- **Day 3:** Codebase walkthrough\n- **Day 4:** First bug fix\n- **Day 5:** Team introductions\n",
+    "chunk_index": 26,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ONBOARDING PROCESS - Week 2-4",
+    "chunk_id": "people_and_teams.md_section_27",
+    "content": "### Week 2-4\n- Assigned mentor\n- Complete starter project\n- Shadow on-call rotation\n- Attend all team meetings\n- First code review\n",
+    "chunk_index": 27,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ONBOARDING PROCESS - 30-60-90 Day Goals",
+    "chunk_id": "people_and_teams.md_section_28",
+    "content": "### 30-60-90 Day Goals\n- **30 Days:** Understanding system\n- **60 Days:** Contributing features\n- **90 Days:** Independent work\n",
+    "chunk_index": 28,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "CONTACT DIRECTORY - Emergency Contacts",
+    "chunk_id": "people_and_teams.md_section_29",
+    "content": "### Emergency Contacts\n- **Production Issues:** (555) 123-4567\n- **Security Incidents:** security@enterprise.com\n- **HR Urgent:** hr-urgent@enterprise.com\n",
+    "chunk_index": 29,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "CONTACT DIRECTORY - Key Stakeholders",
+    "chunk_id": "people_and_teams.md_section_30",
+    "content": "### Key Stakeholders\n- **Legal:** legal@enterprise.com\n- **Compliance:** compliance@enterprise.com\n- **Finance:** finance-it@enterprise.com\n",
+    "chunk_index": 30,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "CONTACT DIRECTORY - Vendor Contacts",
+    "chunk_id": "people_and_teams.md_section_31",
+    "content": "### Vendor Contacts\n- **AWS Support:** Premium tier\n- **OpenAI:** Enterprise agreement\n- **Confluence:** Admin support\n",
+    "chunk_index": 31,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "People And Teams",
+    "document_path": "documentation\\people_and_teams.md",
+    "section_title": "ALUMNI NETWORK - Notable Alumni (Available for consultation)",
+    "chunk_id": "people_and_teams.md_section_32",
+    "content": "### Notable Alumni (Available for consultation)\n- **John Smith** - Now at Google, ML expertise\n- **Mary Johnson** - Microsoft, Distributed systems\n- **Robert Lee** - Startup founder, Product vision\n\n---\n\n*For organizational chart, see internal wiki.*  \n*For contact details, check corporate directory.*  \n*For team updates, join #announcements on Slack.*",
+    "chunk_index": 32,
+    "total_chunks": 33
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "OVERVIEW",
+    "chunk_id": "technology_stack.md_section_0",
+    "content": "## OVERVIEW\n\nThis document provides a comprehensive overview of all technologies, frameworks, libraries, and tools used in the Enterprise Knowledge Chatbot system. It serves as a reference for developers, architects, and operations teams.\n",
+    "chunk_index": 0,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "FRONTEND TECHNOLOGIES - Core Technologies",
+    "chunk_id": "technology_stack.md_section_1",
+    "content": "### Core Technologies\n\n#### HTML5\n- **Version:** Latest standard\n- **Usage:** Semantic markup, structure\n- **Features:** Web components, canvas, localStorage\n\n#### CSS3\n- **Version:** Latest standard\n- **Usage:** Styling, animations, responsive design\n- **Features:** Grid, Flexbox, CSS variables, transitions\n\n#### JavaScript (ES6+)\n- **Version:** ECMAScript 2022\n- **Usage:** Client-side logic, DOM manipulation\n- **Features:** Async/await, modules, arrow functions\n",
+    "chunk_index": 1,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "FRONTEND TECHNOLOGIES - Frontend Libraries",
+    "chunk_id": "technology_stack.md_section_2",
+    "content": "### Frontend Libraries\n\n#### Font Awesome\n- **Version:** 6.0.0\n- **Purpose:** Icon library\n- **License:** Free tier\n- **CDN:** cdnjs.cloudflare.com\n",
+    "chunk_index": 2,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "FRONTEND TECHNOLOGIES - Future Considerations",
+    "chunk_id": "technology_stack.md_section_3",
+    "content": "### Future Considerations\n- React 18.2.0 (planned migration)\n- TypeScript 5.0 (type safety)\n- Webpack 5 (bundling)\n- Tailwind CSS 3.3 (utility-first CSS)\n",
+    "chunk_index": 3,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "BACKEND TECHNOLOGIES - Programming Language",
+    "chunk_id": "technology_stack.md_section_4",
+    "content": "### Programming Language\n\n#### Python\n- **Version:** 3.11.5\n- **Why:** ML ecosystem, simplicity, libraries\n- **Package Manager:** pip 23.2.1\n",
+    "chunk_index": 4,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "BACKEND TECHNOLOGIES - Web Framework",
+    "chunk_id": "technology_stack.md_section_5",
+    "content": "### Web Framework\n\n#### Flask\n- **Version:** 2.3.3\n\n**Extensions:**\n- Flask-CORS 4.0.0 (Cross-origin support)\n- Flask-RESTful 0.3.10 (REST APIs)\n- Flask-SQLAlchemy 3.0.5 (ORM)\n- Flask-Migrate 4.0.4 (Database migrations)\n- Flask-JWT-Extended 4.5.2 (Authentication)\n",
+    "chunk_index": 5,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "BACKEND TECHNOLOGIES - API Framework",
+    "chunk_id": "technology_stack.md_section_6",
+    "content": "### API Framework\n\n#### RESTful API\n- **Standard:** OpenAPI 3.0\n- **Documentation:** Swagger UI 5.0\n- **Versioning:** URL-based (v1, v2)\n",
+    "chunk_index": 6,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "MACHINE LEARNING STACK - Language Models",
+    "chunk_id": "technology_stack.md_section_7",
+    "content": "### Language Models\n\n#### OpenAI GPT\n- **Models:** GPT-3.5-turbo, GPT-4\n- **Library:** openai-python 0.28.1\n- **Usage:** Response generation\n- **Fallback:** Local models\n\n#### Open Source LLMs (Backup)\n- LLaMA 2 (Meta)\n- Mistral 7B\n- Falcon 40B\n",
+    "chunk_index": 7,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "MACHINE LEARNING STACK - Embedding Models",
+    "chunk_id": "technology_stack.md_section_8",
+    "content": "### Embedding Models\n\n#### Sentence Transformers\n- **Version:** 2.2.2\n- **Model:** all-MiniLM-L6-v2\n- **Dimension:** 384\n- **Performance:** 420M sentences/hour\n\n#### Alternative Models\n- all-mpnet-base-v2 (768 dim)\n- multi-qa-MiniLM-L6-cos-v1\n- Custom fine-tuned models\n",
+    "chunk_index": 8,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "MACHINE LEARNING STACK - Vector Databases",
+    "chunk_id": "technology_stack.md_section_9",
+    "content": "### Vector Databases\n\n#### FAISS (Primary)\n- **Version:** 1.7.4\n- **Developer:** Facebook AI Research\n- **Index Type:** IndexFlatL2, IndexIVFFlat\n- **Features:** GPU acceleration, sharding\n\n#### ChromaDB (Secondary)\n- **Version:** 0.4.22\n- **Purpose:** Persistent storage\n- **Features:** Metadata filtering, hybrid search\n",
+    "chunk_index": 9,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "MACHINE LEARNING STACK - NLP Libraries",
+    "chunk_id": "technology_stack.md_section_10",
+    "content": "### NLP Libraries\n\n#### LangChain\n- **Version:** 0.0.350\n- **Purpose:** LLM orchestration\n- **Components:** Chains, agents, memory\n\n#### spaCy\n- **Version:** 3.6.1\n- **Usage:** Text preprocessing\n- **Models:** en_core_web_sm\n\n#### NLTK\n- **Version:** 3.8.1\n- **Usage:** Tokenization, stemming\n\n#### Transformers (Hugging Face)\n- **Version:** 4.33.2\n- **Purpose:** Model loading, inference\n",
+    "chunk_index": 10,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "DATA STORAGE - Primary Database",
+    "chunk_id": "technology_stack.md_section_11",
+    "content": "### Primary Database\n\n#### PostgreSQL\n- **Version:** 15.4\n- **Purpose:** Metadata, user data, configurations\n\n**Extensions:**\n- pgvector (vector similarity)\n- pg_trgm (text search)\n- uuid-ossp (UUID generation)\n",
+    "chunk_index": 11,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "DATA STORAGE - Caching Layer",
+    "chunk_id": "technology_stack.md_section_12",
+    "content": "### Caching Layer\n\n#### Redis\n- **Version:** 7.2.0\n- **Purpose:** Session storage, query cache\n- **Configuration:** Cluster mode\n- **Persistence:** AOF enabled\n",
+    "chunk_index": 12,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "DATA STORAGE - File Storage",
+    "chunk_id": "technology_stack.md_section_13",
+    "content": "### File Storage\n\n#### Local File System\n- **Structure:** `/data/documents/`\n- **Backup:** S3 compatible storage\n- **Format Support:** TXT, MD, PDF, DOCX\n\n#### Object Storage\n\n##### MinIO (S3 Compatible)\n- **Version:** Latest\n- **Purpose:** Document storage, backups\n- **Features:** Versioning, encryption\n",
+    "chunk_index": 13,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "INTEGRATION TECHNOLOGIES - Confluence Integration",
+    "chunk_id": "technology_stack.md_section_14",
+    "content": "### Confluence Integration\n\n#### Atlassian Python API\n- **Version:** 3.41.0\n- **Authentication:** OAuth 2.0\n- **Features:** Page retrieval, space management\n",
+    "chunk_index": 14,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "INTEGRATION TECHNOLOGIES - Git Integration",
+    "chunk_id": "technology_stack.md_section_15",
+    "content": "### Git Integration\n\n#### GitPython\n- **Version:** 3.1.40\n- **Supported:** GitHub, GitLab, Bitbucket\n- **Authentication:** SSH keys, HTTPS tokens\n",
+    "chunk_index": 15,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "INTEGRATION TECHNOLOGIES - Message Queue",
+    "chunk_id": "technology_stack.md_section_16",
+    "content": "### Message Queue\n\n#### RabbitMQ\n- **Version:** 3.12.4\n- **Purpose:** Async task processing\n- **Pattern:** Pub/sub, work queues\n\n#### Celery\n- **Version:** 5.3.1\n- **Purpose:** Distributed task queue\n- **Backend:** Redis\n",
+    "chunk_index": 16,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "INFRASTRUCTURE & DEPLOYMENT - Containerization",
+    "chunk_id": "technology_stack.md_section_17",
+    "content": "### Containerization\n\n#### Docker\n- **Version:** 24.0.5\n\n**Base Images:**\n- python:3.11-slim\n- node:18-alpine\n- postgres:15-alpine\n- redis:7-alpine\n\n#### Docker Compose\n- **Version:** 2.20.3\n- **Purpose:** Local development\n- **Services:** 5 containers\n",
+    "chunk_index": 17,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "INFRASTRUCTURE & DEPLOYMENT - Orchestration",
+    "chunk_id": "technology_stack.md_section_18",
+    "content": "### Orchestration\n\n#### Kubernetes\n- **Version:** 1.28.1\n- **Distribution:** EKS (AWS)\n- **Ingress:** NGINX Ingress Controller\n- **Service Mesh:** Istio 1.19.0\n\n#### Helm\n- **Version:** 3.12.3\n- **Charts:** Custom + Bitnami\n",
+    "chunk_index": 18,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "INFRASTRUCTURE & DEPLOYMENT - CI/CD Pipeline",
+    "chunk_id": "technology_stack.md_section_19",
+    "content": "### CI/CD Pipeline\n\n#### GitHub Actions\n- **Workflows:** Build, test, deploy\n- **Runners:** Self-hosted\n- **Secret Management:** GitHub Secrets\n\n#### Jenkins (Alternative)\n- **Version:** 2.414.1\n- **Plugins:** Blue Ocean, Docker\n- **Agents:** Kubernetes pods\n",
+    "chunk_index": 19,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "INFRASTRUCTURE & DEPLOYMENT - Infrastructure as Code",
+    "chunk_id": "technology_stack.md_section_20",
+    "content": "### Infrastructure as Code\n\n#### Terraform\n- **Version:** 1.5.5\n- **Provider:** AWS, Kubernetes\n- **State:** S3 backend\n\n#### Ansible\n- **Version:** 2.15.3\n- **Purpose:** Configuration management\n- **Playbooks:** 15 custom\n",
+    "chunk_index": 20,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "MONITORING & OBSERVABILITY - Metrics",
+    "chunk_id": "technology_stack.md_section_21",
+    "content": "### Metrics\n\n#### Prometheus\n- **Version:** 2.46.0\n- **Scrape Interval:** 30s\n- **Retention:** 30 days\n\n#### Grafana\n- **Version:** 10.1.0\n- **Dashboards:** 12 custom\n- **Alerts:** 25 configured\n",
+    "chunk_index": 21,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "MONITORING & OBSERVABILITY - Logging",
+    "chunk_id": "technology_stack.md_section_22",
+    "content": "### Logging\n\n#### ELK Stack\n- **Elasticsearch:** 8.9.1\n- **Logstash:** 8.9.1\n- **Kibana:** 8.9.1\n- **Filebeat:** 8.9.1\n\n**Alternative:** Loki + Promtail\n",
+    "chunk_index": 22,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "MONITORING & OBSERVABILITY - Tracing",
+    "chunk_id": "technology_stack.md_section_23",
+    "content": "### Tracing\n\n#### Jaeger\n- **Version:** 1.48.0\n- **Sampling:** 0.1%\n- **Storage:** Elasticsearch\n",
+    "chunk_index": 23,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "MONITORING & OBSERVABILITY - Error Tracking",
+    "chunk_id": "technology_stack.md_section_24",
+    "content": "### Error Tracking\n\n#### Sentry\n- **SDK Version:** 1.31.0\n- **Environment:** Prod, staging, dev\n- **Integration:** Slack alerts\n",
+    "chunk_index": 24,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "MONITORING & OBSERVABILITY - Application Performance",
+    "chunk_id": "technology_stack.md_section_25",
+    "content": "### Application Performance\n\n#### New Relic\n- **Agent:** Python 9.1.0\n- **Features:** APM, infrastructure\n- **Custom metrics:** 20+\n",
+    "chunk_index": 25,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "SECURITY TOOLS - Authentication",
+    "chunk_id": "technology_stack.md_section_26",
+    "content": "### Authentication\n\n#### OAuth 2.0\n- **Providers:** Okta, Auth0\n- **Flow:** Authorization code\n\n#### JWT\n- **Algorithm:** RS256\n- **Expiry:** 1 hour access, 7 days refresh\n",
+    "chunk_index": 26,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "SECURITY TOOLS - Secrets Management",
+    "chunk_id": "technology_stack.md_section_27",
+    "content": "### Secrets Management\n\n#### HashiCorp Vault\n- **Version:** 1.14.2\n- **Backend:** Consul\n- **Auto-unseal:** AWS KMS\n",
+    "chunk_index": 27,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "SECURITY TOOLS - Vulnerability Scanning",
+    "chunk_id": "technology_stack.md_section_28",
+    "content": "### Vulnerability Scanning\n\n#### Snyk\n- **Categories:** Dependencies, containers\n- **Integration:** CI/CD pipeline\n\n#### OWASP ZAP\n- **Purpose:** Security testing\n- **Mode:** Automated + manual\n",
+    "chunk_index": 28,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "SECURITY TOOLS - SSL/TLS",
+    "chunk_id": "technology_stack.md_section_29",
+    "content": "### SSL/TLS\n\n#### Let's Encrypt\n- **Automation:** cert-manager\n- **Renewal:** Automatic\n",
+    "chunk_index": 29,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "DEVELOPMENT TOOLS - IDEs and Editors",
+    "chunk_id": "technology_stack.md_section_30",
+    "content": "### IDEs and Editors\n\n#### VS Code (Recommended)\n**Extensions:**\n- Python\n- Pylance\n- Docker\n- Kubernetes\n- GitLens\n\n#### PyCharm Professional\n- **Features:** Debugging, profiling\n- **Database tools:** Included\n",
+    "chunk_index": 30,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "DEVELOPMENT TOOLS - Version Control",
+    "chunk_id": "technology_stack.md_section_31",
+    "content": "### Version Control\n\n#### Git\n- **Version:** 2.42.0\n- **Hosting:** GitHub Enterprise\n- **Branch Strategy:** GitFlow\n",
+    "chunk_index": 31,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "DEVELOPMENT TOOLS - Code Quality",
+    "chunk_id": "technology_stack.md_section_32",
+    "content": "### Code Quality\n\n#### Black (Formatter)\n- **Version:** 23.7.0\n- **Line Length:** 88\n\n#### Pylint (Linter)\n- **Version:** 2.17.5\n- **Config:** .pylintrc\n\n#### mypy (Type Checker)\n- **Version:** 1.5.1\n- **Strict Mode:** Enabled\n\n#### pytest (Testing)\n- **Version:** 7.4.0\n- **Coverage:** 85% target\n",
+    "chunk_index": 32,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "DEVELOPMENT TOOLS - API Testing",
+    "chunk_id": "technology_stack.md_section_33",
+    "content": "### API Testing\n\n#### Postman\n- **Version:** 10.17\n- **Collections:** 50+ endpoints\n- **Environments:** 3\n\n#### Insomnia\n- **Version:** 2023.5.8\n- **Alternative:** to Postman\n",
+    "chunk_index": 33,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "DEPENDENCIES SUMMARY - Python Packages (Key)",
+    "chunk_id": "technology_stack.md_section_34",
+    "content": "### Python Packages (Key)\n\n```python\nflask==2.3.3\nflask-cors==4.0.0\nrequests==2.31.0\natlassian-python-api==3.41.0\nGitPython==3.1.40\nopenai==0.28.1\nlangchain==0.0.350\nchromadb==0.4.22\nsentence-transformers==2.2.2\nfaiss-cpu==1.7.4\nnumpy==1.24.3\npandas==2.0.3\nscikit-learn==1.3.0\nredis==4.6.0\ncelery==5.3.1\npsycopg2-binary==2.9.7\nSQLAlchemy==2.0.20\n```\n",
+    "chunk_index": 34,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "DEPENDENCIES SUMMARY - System Requirements",
+    "chunk_id": "technology_stack.md_section_35",
+    "content": "### System Requirements\n\n- **CPU:** 8 cores minimum\n- **RAM:** 16GB minimum\n- **Storage:** 100GB SSD\n- **GPU:** Optional (CUDA 11.8)\n- **OS:** Ubuntu 22.04 LTS\n",
+    "chunk_index": 35,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "TECHNOLOGY DECISIONS - Key Decisions",
+    "chunk_id": "technology_stack.md_section_36",
+    "content": "### Key Decisions\n\n#### 1. Python over Node.js\n- Better ML ecosystem\n- Team expertise\n\n#### 2. Flask over FastAPI\n- Mature ecosystem\n- Better documentation\n\n#### 3. FAISS over Pinecone\n- Self-hosted\n- Cost effective\n- Performance\n\n#### 4. Kubernetes over Docker Swarm\n- Industry standard\n- Better tooling\n- Cloud provider support\n",
+    "chunk_index": 36,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "UPGRADE ROADMAP - Q4 2025",
+    "chunk_id": "technology_stack.md_section_37",
+    "content": "### Q4 2025\n- Migrate to Python 3.12\n- Upgrade to Flask 3.0\n- Implement GraphQL API\n",
+    "chunk_index": 37,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "UPGRADE ROADMAP - Q1 2026",
+    "chunk_id": "technology_stack.md_section_38",
+    "content": "### Q1 2026\n- Add Rust services for performance\n- Implement WebAssembly modules\n- Upgrade to Kubernetes 1.30\n",
+    "chunk_index": 38,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "UPGRADE ROADMAP - Q2 2026",
+    "chunk_id": "technology_stack.md_section_39",
+    "content": "### Q2 2026\n- Migrate to React + TypeScript\n- Implement micro-frontends\n- Add WebRTC for voice\n",
+    "chunk_index": 39,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "LICENSES - Open Source Licenses",
+    "chunk_id": "technology_stack.md_section_40",
+    "content": "### Open Source Licenses\n- **MIT:** Flask, React, most npm packages\n- **Apache 2.0:** Kubernetes, Terraform\n- **GPL:** Some Linux tools\n- **BSD:** PostgreSQL, Redis\n",
+    "chunk_index": 40,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "LICENSES - Commercial Licenses",
+    "chunk_id": "technology_stack.md_section_41",
+    "content": "### Commercial Licenses\n- **OpenAI:** Enterprise agreement\n- **New Relic:** Pro tier\n- **GitHub:** Enterprise\n- **Confluence:** 500 user license\n",
+    "chunk_index": 41,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "SUPPORT CONTACTS - Vendor Support",
+    "chunk_id": "technology_stack.md_section_42",
+    "content": "### Vendor Support\n- **AWS:** Premium support tier\n- **OpenAI:** Enterprise support\n- **GitHub:** 24/7 support\n- **Confluence:** Standard support\n",
+    "chunk_index": 42,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "Technology Stack",
+    "document_path": "documentation\\technology_stack.md",
+    "section_title": "SUPPORT CONTACTS - Community",
+    "chunk_id": "technology_stack.md_section_43",
+    "content": "### Community\n- **Stack Overflow:** Tagged questions\n- **GitHub Issues:** Project repos\n- **Discord:** Internal server\n- **Slack:** Vendor channels\n\n---\n\n*For installation guides, see [Deployment Strategies](deployment_strategies.md) document.*  \n*For maintenance procedures, see [Housekeeping](housekeeping_maintenance.md) documentation.*",
+    "chunk_index": 43,
+    "total_chunks": 44
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "EXECUTIVE SUMMARY",
+    "chunk_id": "user_journey.md_section_0",
+    "content": "## EXECUTIVE SUMMARY\n\nThis document maps the complete user journey for different personas interacting with the Enterprise Knowledge Chatbot, from initial discovery through advanced usage patterns.\n",
+    "chunk_index": 0,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER PERSONAS - 1. SARAH - Software Developer",
+    "chunk_id": "user_journey.md_section_1",
+    "content": "### 1. SARAH - Software Developer\n- **Role:** Senior Backend Developer\n- **Experience:** 5 years\n- **Goals:** Quick access to API docs, architecture diagrams\n- **Pain Points:** Time wasted searching multiple sources\n- **Tech Savvy:** High\n",
+    "chunk_index": 1,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER PERSONAS - 2. MIKE - New Employee",
+    "chunk_id": "user_journey.md_section_2",
+    "content": "### 2. MIKE - New Employee\n- **Role:** Junior Developer\n- **Experience:** 6 months\n- **Goals:** Onboarding, learning codebase, finding mentors\n- **Pain Points:** Information overload, don't know where to start\n- **Tech Savvy:** Medium\n",
+    "chunk_index": 2,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER PERSONAS - 3. JENNIFER - Product Manager",
+    "chunk_id": "user_journey.md_section_3",
+    "content": "### 3. JENNIFER - Product Manager\n- **Role:** Senior Product Manager\n- **Experience:** 8 years\n- **Goals:** Find product specs, user research, roadmaps\n- **Pain Points:** Documents scattered across tools\n- **Tech Savvy:** Medium\n",
+    "chunk_index": 3,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER PERSONAS - 4. DAVID - DevOps Engineer",
+    "chunk_id": "user_journey.md_section_4",
+    "content": "### 4. DAVID - DevOps Engineer\n- **Role:** Lead DevOps Engineer\n- **Experience:** 7 years\n- **Goals:** Deployment guides, infrastructure docs, runbooks\n- **Pain Points:** Outdated documentation, emergency procedures\n- **Tech Savvy:** High\n",
+    "chunk_index": 4,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER PERSONAS - 5. LISA - Team Lead",
+    "chunk_id": "user_journey.md_section_5",
+    "content": "### 5. LISA - Team Lead\n- **Role:** Engineering Manager\n- **Experience:** 10 years\n- **Goals:** Team processes, policies, performance metrics\n- **Pain Points:** Keeping team aligned, finding HR policies\n- **Tech Savvy:** Medium\n",
+    "chunk_index": 5,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY MAPS - JOURNEY 1: FIRST-TIME USER (MIKE - NEW EMPLOYEE)",
+    "chunk_id": "user_journey.md_section_6",
+    "content": "### JOURNEY 1: FIRST-TIME USER (MIKE - NEW EMPLOYEE)\n\n#### Stage 1: Discovery\n- Receives chatbot link during onboarding\n- Clicks link from welcome email\n- Lands on chatbot homepage\n\n#### Stage 2: Initial Interaction\n- Sees welcome message\n- Reviews quick action cards\n- Clicks \"I'm a new developer, help me get started\"\n\n#### Stage 3: Onboarding Flow\n- Receives personalized onboarding checklist\n- Gets links to:\n  * Development environment setup\n  * Team structure documentation\n  * Coding standards\n  * First week tasks\n- Bookmarks important resources\n\n#### Stage 4: First Real Query\n- Types: \"How do I set up my local development environment?\"\n- Receives step-by-step guide\n- Sees source: \"DevOps/Setup Documentation\"\n- Follows instructions successfully\n\n#### Stage 5: Building Confidence\n- Asks follow-up questions\n- Explores suggested related topics\n- Starts using chatbot daily\n- Customizes theme preference\n\n#### Stage 6: Regular Usage\n- Uses chatbot 5-10 times per day\n- Shares with other new team members\n- Provides feedback on missing docs\n\n**Pain Points Addressed:**\n- ✅ Single source of truth\n- ✅ Guided onboarding\n- ✅ Self-service learning\n- ✅ Reduced dependency on teammates\n",
+    "chunk_index": 6,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY MAPS - JOURNEY 2: POWER USER (SARAH - SENIOR DEVELOPER)",
+    "chunk_id": "user_journey.md_section_7",
+    "content": "### JOURNEY 2: POWER USER (SARAH - SENIOR DEVELOPER)\n\n#### Stage 1: Initial Skepticism\n- Hears about chatbot from team\n- Tries it expecting limited results\n- Tests with complex technical query\n\n#### Stage 2: Pleasant Surprise\n- Gets accurate, detailed response\n- Sees proper source attribution\n- Response includes code examples\n\n#### Stage 3: Integration into Workflow\n- Bookmarks chatbot\n- Sets as browser homepage\n- Creates keyboard shortcuts\n\n#### Stage 4: Advanced Usage\n- Uses natural language for complex queries\n- Leverages chatbot during code reviews\n- References responses in documentation\n\n#### Stage 5: Contribution\n- Reports outdated information\n- Suggests new document sources\n- Helps train new team members\n\n#### Stage 6: Advocacy\n- Recommends to other teams\n- Shares success stories\n- Contributes to improvement\n\n**Usage Patterns:**\n- **Morning:** Architecture reviews\n- **Midday:** API documentation\n- **Afternoon:** Troubleshooting\n- **Evening:** Best practices research\n",
+    "chunk_index": 7,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY MAPS - JOURNEY 3: EMERGENCY RESPONDER (DAVID - DEVOPS)",
+    "chunk_id": "user_journey.md_section_8",
+    "content": "### JOURNEY 3: EMERGENCY RESPONDER (DAVID - DEVOPS)\n\n#### Stage 1: Crisis Situation\n- Production issue at 2 AM\n- Needs immediate access to runbooks\n- Opens chatbot on mobile\n\n#### Stage 2: Rapid Query\n- Types: \"Database failover procedure\"\n- Gets instant response\n- Sees emergency contact list\n\n#### Stage 3: Problem Resolution\n- Follows step-by-step guide\n- Executes failover successfully\n- Documents incident\n\n#### Stage 4: Post-Incident\n- Uses chatbot for root cause analysis\n- Finds similar past incidents\n- Updates documentation\n\n**Critical Features Used:**\n- Mobile responsiveness\n- Offline capability (cached responses)\n- Quick action shortcuts\n- Emergency procedures highlight\n",
+    "chunk_index": 8,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY MAPS - JOURNEY 4: INFORMATION SEEKER (JENNIFER - PM)",
+    "chunk_id": "user_journey.md_section_9",
+    "content": "### JOURNEY 4: INFORMATION SEEKER (JENNIFER - PM)\n\n#### Stage 1: Research Phase\n- Planning new feature\n- Needs historical context\n- Opens chatbot\n\n#### Stage 2: Exploration\n- Asks: \"What previous payment integrations have we built?\"\n- Reviews comprehensive list\n- Clicks through to source documents\n\n#### Stage 3: Deep Dive\n- Follows related links\n- Discovers technical constraints\n- Finds past user research\n\n#### Stage 4: Synthesis\n- Compiles findings\n- Creates feature proposal\n- References chatbot sources\n\n#### Stage 5: Collaboration\n- Shares chatbot links with team\n- Uses in meeting for quick lookups\n- Adds to project documentation\n\n**Value Realized:**\n- Time saved: 3-4 hours per week\n- Improved decision making\n- Better cross-team alignment\n",
+    "chunk_index": 9,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY TOUCHPOINTS - PRE-SERVICE",
+    "chunk_id": "user_journey.md_section_10",
+    "content": "### PRE-SERVICE\n\n#### 1. Awareness\n- Team mentions\n- Email announcements\n- Slack notifications\n\n#### 2. Consideration\n- Reviews features\n- Checks security compliance\n- Tests basic queries\n",
+    "chunk_index": 10,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY TOUCHPOINTS - SERVICE",
+    "chunk_id": "user_journey.md_section_11",
+    "content": "### SERVICE\n\n#### 3. Onboarding\n- First interaction\n- Tutorial completion\n- Preference setup\n\n#### 4. Regular Use\n- Daily queries\n- Advanced features\n- Customization\n\n#### 5. Advocacy\n- Shares with others\n- Provides feedback\n- Contributes content\n",
+    "chunk_index": 11,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY TOUCHPOINTS - POST-SERVICE",
+    "chunk_id": "user_journey.md_section_12",
+    "content": "### POST-SERVICE\n\n#### 6. Continuous Improvement\n- Feature requests\n- Bug reports\n- Success metrics\n",
+    "chunk_index": 12,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "EMOTIONAL JOURNEY",
+    "chunk_id": "user_journey.md_section_13",
+    "content": "## EMOTIONAL JOURNEY\n\n```\nAwareness → Curiosity → Skepticism → Trial → Surprise → \nTrust → Dependency → Advocacy → Loyalty\n```\n\n**Emotional Highs:**\n- First accurate response\n- Time saved on urgent task\n- Finding hard-to-locate document\n\n**Emotional Lows:**\n- Initial learning curve\n- Occasionally outdated info\n- System downtime\n",
+    "chunk_index": 13,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY METRICS - Engagement Metrics",
+    "chunk_id": "user_journey.md_section_14",
+    "content": "### Engagement Metrics\n- **First Query to Regular Use:** 3 days average\n- **Daily Active Users:** 78%\n- **Average Queries per User:** 8.5/day\n- **User Retention (30 day):** 92%\n",
+    "chunk_index": 14,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY METRICS - Satisfaction Metrics",
+    "chunk_id": "user_journey.md_section_15",
+    "content": "### Satisfaction Metrics\n- **Query Success Rate:** 94%\n- **User Satisfaction:** 4.6/5\n- **Net Promoter Score:** 72\n- **Time to Value:** < 5 minutes\n",
+    "chunk_index": 15,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY METRICS - Efficiency Metrics",
+    "chunk_id": "user_journey.md_section_16",
+    "content": "### Efficiency Metrics\n- **Average Time Saved:** 45 min/day\n- **Document Discovery Time:** -75%\n- **Onboarding Time:** -40%\n- **Support Tickets:** -60%\n",
+    "chunk_index": 16,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER FEEDBACK THEMES - Positive Feedback",
+    "chunk_id": "user_journey.md_section_17",
+    "content": "### Positive Feedback\n1. \"Saves me hours every week\"\n2. \"Finally, everything in one place\"\n3. \"The theme options are beautiful\"\n4. \"Source attribution builds trust\"\n5. \"Great for onboarding new team members\"\n",
+    "chunk_index": 17,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER FEEDBACK THEMES - Areas for Improvement",
+    "chunk_id": "user_journey.md_section_18",
+    "content": "### Areas for Improvement\n1. \"Want voice input option\"\n2. \"Need offline mode\"\n3. \"More keyboard shortcuts\"\n4. \"Export conversation feature\"\n5. \"Integration with IDE\"\n",
+    "chunk_index": 18,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "JOURNEY OPTIMIZATION STRATEGIES - 1. Reduce Time to First Value",
+    "chunk_id": "user_journey.md_section_19",
+    "content": "### 1. Reduce Time to First Value\n- Improved welcome screen\n- Better quick actions\n- Guided first query\n",
+    "chunk_index": 19,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "JOURNEY OPTIMIZATION STRATEGIES - 2. Increase Engagement",
+    "chunk_id": "user_journey.md_section_20",
+    "content": "### 2. Increase Engagement\n- Personalized suggestions\n- Usage streak tracking\n- Team leaderboards\n",
+    "chunk_index": 20,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "JOURNEY OPTIMIZATION STRATEGIES - 3. Improve Retention",
+    "chunk_id": "user_journey.md_section_21",
+    "content": "### 3. Improve Retention\n- Regular feature updates\n- User success stories\n- Community building\n",
+    "chunk_index": 21,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "JOURNEY OPTIMIZATION STRATEGIES - 4. Enhance Satisfaction",
+    "chunk_id": "user_journey.md_section_22",
+    "content": "### 4. Enhance Satisfaction\n- Faster response times\n- More accurate results\n- Better mobile experience\n",
+    "chunk_index": 22,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "ACCESSIBILITY JOURNEY - Inclusive Design Considerations",
+    "chunk_id": "user_journey.md_section_23",
+    "content": "### Inclusive Design Considerations\n- Screen reader compatibility\n- Keyboard navigation\n- High contrast themes\n- Text size options\n- Voice commands (planned)\n",
+    "chunk_index": 23,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY EVOLUTION - Phase 1 (Current)",
+    "chunk_id": "user_journey.md_section_24",
+    "content": "### Phase 1 (Current)\n- Basic chat interface\n- Document retrieval\n- Theme customization\n",
+    "chunk_index": 24,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY EVOLUTION - Phase 2 (Q1 2026)",
+    "chunk_id": "user_journey.md_section_25",
+    "content": "### Phase 2 (Q1 2026)\n- Voice interaction\n- Proactive suggestions\n- Team collaboration\n",
+    "chunk_index": 25,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY EVOLUTION - Phase 3 (Q2 2026)",
+    "chunk_id": "user_journey.md_section_26",
+    "content": "### Phase 3 (Q2 2026)\n- AI-powered insights\n- Predictive assistance\n- Cross-platform sync\n",
+    "chunk_index": 26,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "USER JOURNEY EVOLUTION - Phase 4 (Q3 2026)",
+    "chunk_id": "user_journey.md_section_27",
+    "content": "### Phase 4 (Q3 2026)\n- Augmented reality docs\n- Real-time collaboration\n- Advanced analytics\n",
+    "chunk_index": 27,
+    "total_chunks": 29
+  },
+  {
+    "document_title": "User Journey",
+    "document_path": "documentation\\user_journey.md",
+    "section_title": "SUCCESS STORIES",
+    "chunk_id": "user_journey.md_section_28",
+    "content": "## SUCCESS STORIES\n\n> \"The chatbot reduced our onboarding time from 2 weeks to 3 days. New developers are productive much faster.\"  \n> **- Engineering Manager**\n\n> \"During our last production incident, the chatbot helped us find the resolution in 5 minutes instead of 30.\"  \n> **- DevOps Lead**\n\n> \"I no longer waste time searching through Confluence. Everything I need is just a question away.\"  \n> **- Senior Developer**\n\n---\n\n*For implementation details, see the [Technical Stack](technology_stack.md) documentation.*  \n*For team information, refer to the [People](people_and_teams.md) documentation.*",
+    "chunk_index": 28,
+    "total_chunks": 29
+  }
+]

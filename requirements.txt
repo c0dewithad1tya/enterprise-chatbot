@@ -1,0 +1,11 @@
+flask
+flask-cors
+requests
+atlassian-python-api
+GitPython
+openai
+langchain
+chromadb
+sentence-transformers
+faiss-cpu
+numpy
