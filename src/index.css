@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  
+  body {
+    @apply text-gray-900 dark:text-gray-100;
+  }
+  
+  * {
+    @apply border-gray-200 dark:border-gray-800;
+  }
+}
+
+@layer components {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(156 163 175) transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 dark:bg-gray-600 rounded-full;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500 dark:bg-gray-500;
+  }
+  
+  .glass {
+    @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800;
+  }
+  
+  .glass-border {
+    @apply border border-gray-200 dark:border-gray-800;
+  }
+  
+  .gradient-text {
+    @apply text-gray-900 dark:text-gray-100;
+  }
+  
+  .gradient-bg {
+    @apply bg-gray-50 dark:bg-gray-950;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .animation-delay-100 {
+    animation-delay: 0.1s;
+  }
+  
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+  }
+  
+  .animation-delay-300 {
+    animation-delay: 0.3s;
+  }
+  
+  .animation-delay-500 {
+    animation-delay: 0.5s;
+  }
+}
