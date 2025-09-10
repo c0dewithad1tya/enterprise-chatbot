@@ -207,7 +207,7 @@ export const Message = React.memo<MessageProps>(function Message({ message, isLa
           ) : (
             <div className="message-content">
               {isUser ? (
-                <p className="text-white whitespace-pre-wrap" role="text">{message.content}</p>
+                <p className="whitespace-pre-wrap" role="text">{message.content}</p>
               ) : (
                 <div className="prose prose-sm max-w-none dark:prose-invert" role="text">
                   {renderMarkdown(displayedContent)}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertCircle, Sparkles, MessageSquare, Users, Zap, Target, Wrench, BookOpen } from 'lucide-react'
 import { Message } from './Message'
@@ -10,6 +10,7 @@ export function ChatInterface() {
   const { currentChat, error, clearError } = useChatStore()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const [suggestedQuery, setSuggestedQuery] = useState<string | null>(null)
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -128,11 +129,7 @@ export function ChatInterface() {
               }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
-                // This would trigger a message with the query
-                const event = new CustomEvent('welcomeCardClick', { 
-                  detail: { query: card.query }
-                })
-                window.dispatchEvent(event)
+                setSuggestedQuery(card.query)
               }}
               className="group p-6 glass glass-border rounded-2xl text-left hover:shadow-xl transition-all duration-300"
             >
@@ -249,18 +246,11 @@ export function ChatInterface() {
       </div>
 
       {/* Input Area */}
-      <MessageInput />
+      <MessageInput 
+        suggestedQuery={suggestedQuery}
+        onQueryProcessed={() => setSuggestedQuery(null)}
+      />
     </div>
   )
 }
 
-// Listen for welcome card clicks
-if (typeof window !== 'undefined') {
-  window.addEventListener('welcomeCardClick', ((event: CustomEvent) => {
-    // This would be handled by the MessageInput component
-    const inputEvent = new CustomEvent('setInputValue', {
-      detail: { value: event.detail.query }
-    })
-    window.dispatchEvent(inputEvent)
-  }) as EventListener)
-}

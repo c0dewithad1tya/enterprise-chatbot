@@ -11,7 +11,12 @@ interface MessageForm {
   message: string
 }
 
-export function MessageInput() {
+interface MessageInputProps {
+  suggestedQuery?: string | null
+  onQueryProcessed?: () => void
+}
+
+export function MessageInput({ suggestedQuery, onQueryProcessed }: MessageInputProps) {
   const [isRecording, setIsRecording] = useState(false)
   const [charCount, setCharCount] = useState(0)
   const [loadingMessageId, setLoadingMessageId] = useState<string | null>(null)
@@ -24,6 +29,18 @@ export function MessageInput() {
   })
   
   const messageValue = watch('message')
+  
+  // Handle suggested queries from welcome cards
+  useEffect(() => {
+    if (suggestedQuery) {
+      setValue('message', suggestedQuery)
+      // Auto-submit the suggested query
+      setTimeout(() => {
+        handleSubmit(onSubmit)()
+        onQueryProcessed?.()
+      }, 100)
+    }
+  }, [suggestedQuery, setValue, handleSubmit, onQueryProcessed])
   
   // Auto-resize textarea
   useEffect(() => {
