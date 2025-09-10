@@ -1,8 +1,8 @@
 """
 Enhanced Search Engine for WhoKnows? Chatbot
 ============================================
-Provides intelligent document search with context-aware ranking
-and structured result presentation.
+Provides intelligent document search with context-aware ranking,
+structured result presentation, and summarization support.
 """
 
 import re
@@ -14,6 +14,7 @@ from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
 from sentence_transformers import SentenceTransformer
+from summarizer import Summarizer, ConversationalContext
 
 
 class QueryType(Enum):
@@ -365,6 +366,8 @@ class SearchEngine:
     def __init__(self):
         self.query_analyzer = QueryAnalyzer()
         self.content_extractor = ContentExtractor()
+        self.summarizer = None  # Initialize on demand
+        self.conversation_context = ConversationalContext(window_size=2)
         self.model = None
         self.index = None
         self.chunks = []
@@ -389,8 +392,36 @@ class SearchEngine:
             print(f"Failed to initialize search engine: {e}")
             return False
     
-    def search(self, query: str, top_k: int = 10) -> Dict:
-        """Perform intelligent search with context-aware ranking"""
+    def search(self, query: str, top_k: int = 10, summary_mode: str = None, 
+               context: List[Dict] = None) -> Dict:
+        """
+        Perform intelligent search with context-aware ranking and optional summarization.
+        
+        Args:
+            query: Search query
+            top_k: Number of results to return
+            summary_mode: None, 'brief', or 'detailed' for summarization
+            context: Previous conversation context for follow-up queries
+        
+        Returns:
+            Search results with optional summary
+        """
+        
+        # Handle conversational context
+        original_query = query
+        if context and len(context) > 0:
+            # Add to conversation context
+            for ctx in context[-2:]:  # Last 2 messages
+                if 'query' in ctx and 'response' in ctx:
+                    self.conversation_context.add_interaction(
+                        ctx['query'], 
+                        ctx['response']
+                    )
+            
+            # Expand query if it's a follow-up
+            query, was_expanded = self.conversation_context.expand_query(query)
+            if was_expanded:
+                print(f"Expanded query: {original_query} -> {query}")
         
         # Analyze the query
         query_analysis = self.query_analyzer.analyze(query)
@@ -404,8 +435,63 @@ class SearchEngine:
         # Group and aggregate results
         aggregated_results = self._aggregate_results(ranked_results, query_analysis)
         
+        # Apply summarization if requested
+        if summary_mode in ['brief', 'detailed']:
+            # Initialize summarizer on first use
+            if not self.summarizer:
+                try:
+                    # Use a lightweight model for faster inference
+                    self.summarizer = Summarizer(model_name="google/flan-t5-small")
+                except Exception as e:
+                    print(f"Failed to initialize summarizer: {e}")
+                    self.summarizer = Summarizer(model_name="extractive")  # Fallback
+            
+            # Generate summary
+            if self.summarizer:
+                # Only use the TOP result for summarization to avoid mixing irrelevant content
+                # Take only the highest scoring result
+                results_for_summary = []
+                if aggregated_results:
+                    top_hit = aggregated_results[0]
+                    if isinstance(top_hit, SearchHit):
+                        results_for_summary.append({
+                            'content': top_hit.content,  # Use full content from top result
+                            'source': top_hit.document_title,
+                            'title': top_hit.section_title
+                        })
+                    else:
+                        results_for_summary.append(top_hit)
+                
+                summary_result = self.summarizer.summarize_search_results(
+                    results_for_summary,
+                    original_query,
+                    summary_type=summary_mode
+                )
+                
+                # Add summary to response
+                aggregated_results = [{
+                    'summary': summary_result,
+                    'summary_mode': summary_mode,
+                    'original_results': aggregated_results
+                }]
+        
         # Format the response
         response = self._format_response(aggregated_results, query_analysis)
+        
+        # Store interaction in context for future queries
+        if aggregated_results and len(aggregated_results) > 0:
+            # Extract content based on result type
+            if isinstance(aggregated_results[0], dict):
+                if 'summary' in aggregated_results[0]:
+                    response_text = aggregated_results[0]['summary'][:500]
+                else:
+                    response_text = aggregated_results[0].get('content', '')[:500]
+            elif isinstance(aggregated_results[0], SearchHit):
+                response_text = aggregated_results[0].content[:500]
+            else:
+                response_text = str(aggregated_results[0])[:500]
+            
+            self.conversation_context.add_interaction(original_query, response_text)
         
         return response
     
@@ -540,13 +626,34 @@ class SearchEngine:
         
         return final_results[:5]  # Return top 5 aggregated results
     
-    def _format_response(self, results: List[SearchHit], query_analysis: Dict) -> Dict:
+    def _format_response(self, results: List, query_analysis: Dict) -> Dict:
         """Format the final response for the user"""
         
         if not results:
             return self._no_results_response(query_analysis)
         
-        # Build the main message
+        # Calculate confidence score based on search results
+        confidence = self._calculate_confidence(results)
+        
+        # Check if this is a summary response
+        if isinstance(results[0], dict) and 'summary' in results[0]:
+            summary_data = results[0]
+            # For summaries, calculate confidence from original results
+            original_results = summary_data.get('original_results', [])
+            confidence = self._calculate_confidence(original_results)
+            
+            return {
+                'message': summary_data['summary'],
+                'sources': self._extract_sources(original_results),
+                'query_analysis': {
+                    'type': query_analysis.get('query_type', QueryType.GENERAL).value if hasattr(query_analysis.get('query_type', QueryType.GENERAL), 'value') else 'general',
+                    'key_terms': query_analysis.get('key_terms', [])
+                },
+                'summary_mode': summary_data.get('summary_mode'),
+                'confidence': confidence
+            }
+        
+        # Build the main message for non-summary responses
         message_parts = []
         
         # Add a clean contextual title
@@ -622,7 +729,8 @@ class SearchEngine:
             'query_analysis': {
                 'type': query_analysis['query_type'].value,
                 'key_terms': query_analysis['key_terms']
-            }
+            },
+            'confidence': confidence
         }
     
     def _generate_response_title(self, query_analysis: Dict) -> str:
@@ -663,6 +771,91 @@ class SearchEngine:
                 return "## Answer"
             else:
                 return "## Information"
+    
+    def _calculate_confidence(self, results: List) -> Dict:
+        """
+        Calculate confidence score based on search results quality.
+        Returns confidence level and score.
+        """
+        if not results:
+            return {
+                'level': 'low',
+                'score': 0.0,
+                'explanation': 'No matching documents found'
+            }
+        
+        # Get the top result score
+        if isinstance(results[0], SearchHit):
+            top_score = results[0].score
+        elif isinstance(results[0], dict):
+            top_score = results[0].get('relevance', 0)
+        else:
+            top_score = 0
+        
+        # Calculate confidence based on score thresholds
+        # These thresholds are based on typical FAISS similarity scores
+        if top_score > 2.0:  # Very high relevance
+            confidence_level = 'high'
+            confidence_score = min(0.95, top_score / 3.0)
+            explanation = 'Found highly relevant information'
+        elif top_score > 1.0:  # Good relevance
+            confidence_level = 'medium'
+            confidence_score = 0.6 + (top_score - 1.0) * 0.2
+            explanation = 'Found relevant information'
+        elif top_score > 0.5:  # Some relevance
+            confidence_level = 'low'
+            confidence_score = 0.3 + (top_score - 0.5) * 0.4
+            explanation = 'Found partially relevant information'
+        else:  # Poor relevance
+            confidence_level = 'very_low'
+            confidence_score = max(0.1, top_score * 0.4)
+            explanation = 'Results may not fully answer your question'
+        
+        # Additional factors that affect confidence
+        factors = []
+        
+        # Check if we have multiple good results
+        if len(results) > 1:
+            if isinstance(results[1], SearchHit):
+                second_score = results[1].score
+            else:
+                second_score = 0
+            
+            if second_score > 1.0:
+                confidence_score = min(1.0, confidence_score + 0.1)
+                factors.append('multiple sources')
+        
+        # Check if query type matches content
+        # This would be more sophisticated in production
+        if len(results) > 0:
+            factors.append('direct match')
+        
+        return {
+            'level': confidence_level,
+            'score': round(confidence_score, 2),
+            'explanation': explanation,
+            'factors': factors
+        }
+    
+    def _extract_sources(self, results: List) -> List[Dict]:
+        """Extract sources from search results"""
+        sources = []
+        seen_docs = set()
+        
+        for hit in results[:3]:
+            if isinstance(hit, SearchHit):
+                if hit.document_title not in seen_docs:
+                    seen_docs.add(hit.document_title)
+                    doc_name = hit.document_path.split('/')[-1] if hit.document_path else 'document'
+                    sources.append({
+                        'type': 'document',
+                        'title': hit.document_title,
+                        'path': hit.document_path,
+                        'relevance': round(hit.score, 2),
+                        'link': f"/docs/{doc_name}"
+                    })
+        
+        return sources[:3]
     
     def _no_results_response(self, query_analysis: Dict) -> Dict:
         """Generate a helpful response when no results are found"""

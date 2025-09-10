@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Copy, Check, FileText, ExternalLink, User, Bot } from 'lucide-react'
+import { Copy, Check, FileText, ExternalLink, User, Bot, ShieldCheck, Shield, AlertTriangle, HelpCircle } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
@@ -221,6 +221,44 @@ export const Message = React.memo<MessageProps>(function Message({ message, isLa
                     />
                   )}
                 </div>
+              )}
+
+              {/* Confidence Indicator */}
+              {!isUser && message.confidence && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="mb-3 flex items-center gap-2"
+                >
+                  <div className={cn(
+                    "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium",
+                    message.confidence.level === 'high' 
+                      ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                      : message.confidence.level === 'medium'
+                      ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+                      : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400"
+                  )}>
+                    {message.confidence.level === 'high' ? (
+                      <ShieldCheck size={16} />
+                    ) : message.confidence.level === 'medium' ? (
+                      <Shield size={16} />
+                    ) : (
+                      <AlertTriangle size={16} />
+                    )}
+                    <span className="capitalize">{message.confidence.level} Confidence</span>
+                    <span className="opacity-75">({Math.round(message.confidence.score * 100)}%)</span>
+                  </div>
+                  {message.confidence.explanation && (
+                    <div className="group relative">
+                      <HelpCircle size={14} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-help" />
+                      <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block z-10 w-64 p-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs rounded-lg shadow-lg">
+                        {message.confidence.explanation}
+                        <div className="absolute left-2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-100"></div>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
               )}
 
               {/* Sources */}

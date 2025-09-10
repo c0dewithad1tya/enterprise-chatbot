@@ -47,10 +47,18 @@ class ApiService {
     }
   }
 
-  async sendMessage(query: string): Promise<ChatResponse> {
+  async sendMessage(
+    query: string, 
+    summaryMode?: 'brief' | 'detailed' | null,
+    context?: Array<{ query: string; response: string }>
+  ): Promise<ChatResponse> {
     return this.request<ChatResponse>('/api/chat', {
       method: 'POST',
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ 
+        query,
+        summaryMode,
+        context 
+      }),
     })
   }
 

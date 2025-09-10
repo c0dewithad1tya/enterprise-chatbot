@@ -28,23 +28,33 @@ else:
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    """Main chat endpoint with improved search"""
+    """Main chat endpoint with improved search and summarization"""
     data = request.json
     query = data.get('query', '')
+    summary_mode = data.get('summaryMode', None)  # 'brief', 'detailed', or None
+    conversation_context = data.get('context', [])  # Previous messages for context
     
     if not query:
         return jsonify({'error': 'Query is required'}), 400
     
     try:
         if search_initialized:
-            # Use the enhanced search engine
-            result = search_engine.search(query)
+            # Use the enhanced search engine with new parameters
+            result = search_engine.search(
+                query=query,
+                summary_mode=summary_mode,
+                context=conversation_context
+            )
         else:
             # Fallback to keyword search
             result = keyword_search(query)
         
         # Log query and response quality
         logger.info(f"Query: {query}")
+        if summary_mode:
+            logger.info(f"Summary mode: {summary_mode}")
+        if conversation_context:
+            logger.info(f"Context provided: {len(conversation_context)} messages")
         if 'query_analysis' in result:
             logger.info(f"Query type: {result['query_analysis']['type']}")
             logger.info(f"Key terms: {result['query_analysis']['key_terms']}")

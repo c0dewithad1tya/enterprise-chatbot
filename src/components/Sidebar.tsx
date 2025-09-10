@@ -106,18 +106,16 @@ export function Sidebar() {
       </div>
 
       {/* New Chat Button */}
-      <div className="p-4">
+      <div className={cn("p-4", sidebarCollapsed && "px-2 py-3")}>
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={createNewChat}
           className={cn(
-            'w-full flex items-center justify-center space-x-2 px-4 py-3',
-            'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900',
-            'rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200',
-            'transition-all duration-200 shadow-sm hover:shadow-md',
-            sidebarCollapsed && 'px-2'
+            "w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all duration-200 shadow-sm hover:shadow-md",
+            sidebarCollapsed && "px-0 py-2"
           )}
+          title={sidebarCollapsed ? "New Chat" : undefined}
         >
           <Plus size={18} />
           {!sidebarCollapsed && <span className="font-medium">New Chat</span>}
@@ -126,49 +124,45 @@ export function Sidebar() {
 
       {/* Chat History */}
       <div className="flex-1 overflow-hidden">
-        {!sidebarCollapsed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="px-4 pb-2"
-          >
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-              Recent Chats
-            </h3>
-          </motion.div>
-        )}
+        {!sidebarCollapsed ? (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="px-4 pb-2"
+            >
+              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Recent Chats
+              </h3>
+            </motion.div>
 
-        <div className="px-2 space-y-1 overflow-y-auto scrollbar-thin max-h-[calc(100vh-300px)]">
-          <AnimatePresence>
-            {chatHistory.length === 0 ? (
-              !sidebarCollapsed && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="p-4 text-center text-gray-500 dark:text-gray-400 text-sm"
-                >
-                  No recent chats
-                </motion.div>
-              )
-            ) : (
-              chatHistory.map((chat, index) => (
-                <motion.div
-                  key={chat.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, x: -100 }}
-                  transition={{ delay: index * 0.05 }}
-                  onClick={() => handleChatClick(chat.id)}
-                  className={cn(
-                    'group relative p-3 rounded-lg cursor-pointer transition-all duration-200',
-                    'hover:bg-gray-100 dark:hover:bg-gray-800',
-                    currentChat?.id === chat.id 
-                      ? 'bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600' 
-                      : 'hover:shadow-md'
-                  )}
-                >
-                  {!sidebarCollapsed ? (
-                    <>
+            <div className="px-2 space-y-1 overflow-y-auto scrollbar-thin max-h-[calc(100vh-300px)]">
+              <AnimatePresence>
+                {chatHistory.length === 0 ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="p-4 text-center text-gray-500 dark:text-gray-400 text-sm"
+                  >
+                    No recent chats
+                  </motion.div>
+                ) : (
+                  chatHistory.map((chat, index) => (
+                    <motion.div
+                      key={chat.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -100 }}
+                      transition={{ delay: index * 0.05 }}
+                      onClick={() => handleChatClick(chat.id)}
+                      className={cn(
+                        'group relative p-3 rounded-lg cursor-pointer transition-all duration-200',
+                        'hover:bg-gray-100 dark:hover:bg-gray-800',
+                        currentChat?.id === chat.id 
+                          ? 'bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600' 
+                          : 'hover:shadow-md'
+                      )}
+                    >
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
@@ -191,29 +185,44 @@ export function Sidebar() {
                           <Trash2 size={14} />
                         </motion.button>
                       </div>
-                    </>
-                  ) : (
-                    <div className="flex justify-center">
-                      <MessageSquare 
-                        size={18} 
-                        className={cn(
-                          currentChat?.id === chat.id 
-                            ? 'text-gray-900 dark:text-gray-100' 
-                            : 'text-gray-600 dark:text-gray-400'
-                        )}
-                      />
-                    </div>
-                  )}
-                </motion.div>
-              ))
-            )}
-          </AnimatePresence>
-        </div>
+                  </motion.div>
+                ))
+              )}
+            </AnimatePresence>
+          </div>
+          </>
+        ) : (
+          /* Collapsed view - show minimal icons for recent chats */
+          <div className="px-2 py-2 space-y-1 overflow-y-auto scrollbar-thin max-h-[calc(100vh-250px)]">
+            {chatHistory.slice(0, 8).map((chat, index) => (
+              <motion.div
+                key={chat.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleChatClick(chat.id)}
+                className={cn(
+                  'p-2 rounded-lg cursor-pointer transition-all duration-200 flex justify-center',
+                  'hover:bg-gray-100 dark:hover:bg-gray-800',
+                  currentChat?.id === chat.id 
+                    ? 'bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600' 
+                    : ''
+                )}
+                title={chat.title}
+              >
+                <MessageSquare size={18} className="text-gray-600 dark:text-gray-400" />
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Bottom Section */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
-        {!sidebarCollapsed && (
+      {/* Bottom Section - Show in both collapsed and expanded states */}
+      <div className={cn(
+        "border-t border-gray-200 dark:border-gray-700",
+        sidebarCollapsed ? "p-2 space-y-2" : "p-4 space-y-3"
+      )}>
+        {!sidebarCollapsed ? (
+          /* Expanded view */
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -267,31 +276,52 @@ export function Sidebar() {
               </motion.button>
             </div>
           </motion.div>
-        )}
-
-        {sidebarCollapsed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex flex-col items-center space-y-3"
-          >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setTheme(theme.mode === 'dark' ? 'light' : 'dark')}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              {theme.mode === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            </motion.button>
+        ) : (
+          /* Collapsed view - minimal icons */
+          <div className="flex flex-col items-center space-y-2">
+            {/* Theme icons */}
+            <div className="flex flex-col space-y-1">
+              {themeOptions.map(({ value, icon: Icon, label }) => (
+                <motion.button
+                  key={value}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setTheme(value)}
+                  className={cn(
+                    'p-2 rounded-lg transition-all duration-200',
+                    theme.mode === value
+                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400'
+                  )}
+                  title={label}
+                >
+                  <Icon size={16} />
+                </motion.button>
+              ))}
+            </div>
             
-            <motion.button
+            {/* Divider */}
+            <div className="w-8 h-px bg-gray-200 dark:bg-gray-700" />
+            
+            {/* User avatar */}
+            <motion.div
               whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-8 h-8 bg-gray-700 dark:bg-gray-300 rounded-full flex items-center justify-center text-white dark:text-gray-900 font-bold text-sm"
+              className="w-8 h-8 bg-gray-700 dark:bg-gray-300 rounded-full flex items-center justify-center text-white dark:text-gray-900 font-bold text-sm cursor-pointer"
+              title="Enterprise User"
             >
               U
+            </motion.div>
+            
+            {/* Settings */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              title="Settings"
+            >
+              <Settings size={16} />
             </motion.button>
-          </motion.div>
+          </div>
         )}
       </div>
     </motion.div>

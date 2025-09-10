@@ -1,9 +1,16 @@
+export interface Confidence {
+  level: 'high' | 'medium' | 'low'
+  score: number
+  explanation?: string
+}
+
 export interface Message {
   id: string
   type: 'user' | 'assistant'
   content: string
   timestamp: Date
   sources?: Source[]
+  confidence?: Confidence
   isLoading?: boolean
 }
 
@@ -25,6 +32,7 @@ export interface Chat {
 export interface ChatResponse {
   message: string
   sources: Source[]
+  confidence?: Confidence
 }
 
 export interface User {

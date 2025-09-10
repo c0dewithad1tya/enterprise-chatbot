@@ -4,6 +4,9 @@ import type { Chat, Message, ChatState } from '@/types'
 import { generateId } from '@/lib/utils'
 
 interface ChatStore extends ChatState {
+  // State
+  summaryMode: 'detailed' | 'brief' | null
+  
   // Actions
   setCurrentChat: (chat: Chat | null) => void
   addMessage: (message: Omit<Message, 'id' | 'timestamp'>) => void
@@ -15,6 +18,7 @@ interface ChatStore extends ChatState {
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
   clearError: () => void
+  setSummaryMode: (mode: 'detailed' | 'brief' | null) => void
 }
 
 export const useChatStore = create<ChatStore>()(
@@ -25,9 +29,11 @@ export const useChatStore = create<ChatStore>()(
       chatHistory: [],
       isLoading: false,
       error: null,
+      summaryMode: null,
 
       // Actions
       setCurrentChat: (chat) => set({ currentChat: chat }),
+      setSummaryMode: (mode) => set({ summaryMode: mode }),
 
       addMessage: (messageData) => {
         const message: Message = {

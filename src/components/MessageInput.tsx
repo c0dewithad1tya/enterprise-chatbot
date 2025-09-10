@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, Paperclip, Loader2, Mic, MicOff } from 'lucide-react'
+import { Send, Paperclip, Loader2, Mic, MicOff, FileText, Zap } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { apiService } from '@/services/api'
@@ -50,8 +50,25 @@ export function MessageInput({ suggestedQuery, onQueryProcessed }: MessageInputP
     setCharCount(messageValue?.length || 0)
   }, [messageValue])
 
+  const { summaryMode, setSummaryMode } = useChatStore(state => ({
+    summaryMode: state.summaryMode,
+    setSummaryMode: state.setSummaryMode
+  }))
+  
   const sendMessageMutation = useMutation({
-    mutationFn: (query: string) => apiService.sendMessage(query),
+    mutationFn: (query: string) => {
+      // Get last 2 messages as context for conversation
+      const context = currentChat?.messages
+        .slice(-4)  // Get last 4 messages (2 exchanges)
+        .filter(m => !m.isLoading)
+        .map(m => ({
+          query: m.type === 'user' ? m.content : '',
+          response: m.type === 'assistant' ? m.content : ''
+        }))
+        .filter(c => c.query || c.response) || []
+        
+      return apiService.sendMessage(query, summaryMode, context)
+    },
     onMutate: async (query: string) => {
       clearError()
       setLoading(true)
@@ -88,6 +105,7 @@ export function MessageInput({ suggestedQuery, onQueryProcessed }: MessageInputP
           updateMessage(lastMessage.id, {
             content: data.message,
             sources: data.sources,
+            confidence: data.confidence,
             isLoading: false,
           })
         }
@@ -155,6 +173,39 @@ export function MessageInput({ suggestedQuery, onQueryProcessed }: MessageInputP
       className="p-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
     >
       <div className="max-w-4xl mx-auto space-y-4">
+        {/* Summary Mode Toggle */}
+        <div className="flex justify-center gap-2">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setSummaryMode(null)}
+            className={cn(
+              "px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5",
+              summaryMode === null
+                ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+            )}
+          >
+            <FileText size={14} />
+            Detailed
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setSummaryMode('brief')}
+            className={cn(
+              "px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5",
+              summaryMode === 'brief'
+                ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+            )}
+          >
+            <Zap size={14} />
+            Summary
+          </motion.button>
+        </div>
+        
         {/* Suggested Questions */}
         <AnimatePresence>
           {!messageValue && (!currentChat || currentChat.messages.length === 0) && (

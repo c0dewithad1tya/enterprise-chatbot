@@ -1,0 +1,103 @@
+● 📋 Approach for Implementing Summarization & Conversational Memory
+
+  1. Summarization Feature
+
+  Architecture:
+  User Query → Search Engine → Multiple Documents Found → Summarization Layer → Concise Response
+
+  Implementation Plan:
+
+  a) Add Summarization Module (summarizer.py):
+  - Use a lightweight summarization model (like transformers BART or T5)
+  - Or simpler: extractive summarization using TextRank/BERT embeddings
+  - Create different summary types:
+    - Quick Answer: 1-2 sentences
+    - Detailed Summary: 3-5 key points
+    - Full Context: Current 2000 char limit
+
+  b) Enhance Search Engine:
+  - Add summary_mode parameter to search requests
+  - Generate summaries for top results
+  - Aggregate summaries across multiple documents
+  - Preserve source attribution
+
+  c) UI Changes:
+  - Add toggle button: "Detailed" vs "Summary" mode
+  - Show summary first, with "Read more" expansion
+  - Visual indicator for summarized content
+
+  2. Conversational Memory
+
+  Architecture:
+  User Message → Context Builder → [Previous Messages + Current Query] → Enhanced Search → Response
+
+  Implementation Plan:
+
+  a) Backend Context Management:
+  - Store conversation context in session
+  - Build context window (last 3-5 messages)
+  - Enhance query with context understanding:
+    - "Tell me more" → Expand on last topic
+    - "What about X?" → Search X in context of previous topic
+    - Pronoun resolution (it, that, this)
+
+  b) Query Rewriting:
+  - Detect follow-up patterns
+  - Expand ambiguous queries using context
+  - Maintain topic continuity
+
+  c) Frontend State:
+  - Already have chat history in Zustand
+  - Pass last 3 messages as context to API
+  - Visual indicator showing "context-aware" mode
+
+  3. Technical Choices
+
+  For Summarization:
+  - Option A: Use sumy library (TextRank) - Simple, fast, no GPU needed
+  - Option B: Use transformers with small model - Better quality, needs more resources
+  - Option C: Custom extractive using existing embeddings - Reuse our FAISS vectors
+
+  For Context:
+  - Store in Flask session (server-side)
+  - Include context in API requests
+  - Smart query expansion logic
+
+  4. Minimal Viable Implementation
+
+  Start with:
+  1. Basic extractive summarization using existing embeddings
+  2. Simple context tracking for "tell me more" queries
+  3. UI toggle for summary/detailed mode
+
+  5. Example Flow
+
+  # Current flow
+  query: "What is our ML stack?"
+  response: [2000 chars of detailed info]
+
+  # New summarized flow
+  query: "What is our ML stack?"
+  summary_response: "Our ML stack uses PyTorch for deep learning, scikit-learn for classical ML,
+                     with MLflow for experiment tracking. Deployed on Kubernetes with GPU support."
+  [Expand for details button]
+
+  # Context-aware flow
+  query1: "Who is the ML lead?"
+  response1: "John Smith leads the ML team..."
+  query2: "What are his responsibilities?"  # System understands "his" = John Smith
+  response2: "John Smith's responsibilities include..."
+
+  Questions Before Implementation:
+
+  1. Summarization preference: Quick extractive (faster) or AI-generated (better quality)?
+  2. Context window size: How many previous messages to consider?
+  3. UI preference: Toggle button, dropdown, or automatic mode?
+  4. Performance: Okay with slight latency for better summaries?
+
+  Answers 
+
+  1. AI-generated summaries using a small transformer model for better quality
+  2. Context window of 2 messages for conversational memory
+  3. Toggle button in UI for summary/detailed mode
+  4. Accept slight latency for quality
