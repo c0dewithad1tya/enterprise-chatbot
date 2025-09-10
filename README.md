@@ -11,18 +11,30 @@ A modern, AI-powered chatbot that provides intelligent access to organizational 
 - **Clean Text Formatting** - Removes markdown artifacts and escape characters
 - **2000 Character Limit** - Optimized content length for readability
 - **Document Links** - Direct links to full documentation when content is truncated
+- **Confidence Scoring** - Visual indicators showing search result confidence levels
+
+### AI-Powered Features
+- **Smart Summarization** - Intelligent content summarization with context awareness
+- **Conversational Memory** - 2-message context window for better continuity
+- **Toggle Modes** - Switch between brief summaries and detailed responses
+- **Confidence Indicators** - High/Medium/Low confidence badges with explanations
 
 ### UI/UX Enhancements
 - **Unified Logo Design** - Consistent minimal grey/white theme across all components
 - **Improved Result Display** - Cleaner, more readable search results
 - **Source Attribution** - Shows relevance scores and document sources
 - **Better Message Rendering** - Enhanced markdown display with proper formatting
+- **Redesigned Sidebar** - Improved collapsed state with better icon placement
+- **Visual Confidence Badges** - Color-coded indicators with percentage scores
 
 ## ✨ Features
 
 - 🧠 **Intelligent Search** - Advanced query analysis with intent understanding
 - 🔍 **Semantic Search** - Uses FAISS vector embeddings for accurate document retrieval
 - 💬 **Smart Chat Interface** - Context-aware responses with typing animations
+- 📊 **Confidence Scores** - Visual indicators showing response reliability (High/Medium/Low)
+- 📝 **AI Summarization** - Intelligent content summarization with toggle modes
+- 🧩 **Conversational Context** - Maintains 2-message context for better continuity
 - 🎨 **Modern Minimal Design** - Clean grey and white theme with glass morphism effects
 - 📱 **Responsive UI** - Mobile-first design that works perfectly on all devices
 - ⚡ **Lightning Fast** - Built with Vite for instant hot-reloads and optimized performance
@@ -47,10 +59,12 @@ A modern, AI-powered chatbot that provides intelligent access to organizational 
 
 ### Backend
 - **Python 3.11** with Flask
-- **Custom Search Engine** - Advanced query analysis and ranking
+- **Custom Search Engine** - Advanced query analysis with confidence scoring
+- **AI Summarization** - Smart extraction and content summarization
 - **Sentence-BERT** for embeddings (all-MiniLM-L6-v2)
 - **FAISS** for vector similarity search
 - **Smart Content Processing** - Automatic cleaning and formatting
+- **Conversational Context** - Maintains conversation history for continuity
 
 ### Development Tools
 - **TypeScript** - Static typing for better developer experience
@@ -103,26 +117,27 @@ chatbot/
 ├── src/                        # React TypeScript source code
 │   ├── components/             # Reusable UI components
 │   │   ├── ChatInterface.tsx   # Main chat interface with welcome screen
-│   │   ├── Message.tsx         # Message component with clean formatting
-│   │   ├── MessageInput.tsx    # Advanced input with suggestions
-│   │   ├── Sidebar.tsx         # Collapsible sidebar with chat history
+│   │   ├── Message.tsx         # Message component with confidence indicators
+│   │   ├── MessageInput.tsx    # Advanced input with summary toggle
+│   │   ├── Sidebar.tsx         # Redesigned collapsible sidebar
 │   │   ├── Header.tsx          # Application header with controls
 │   │   ├── Logo.tsx            # Unified logo component
 │   │   └── ErrorBoundary.tsx   # Error handling component
 │   ├── store/                  # State management
-│   │   ├── chat.ts             # Chat state and history management
+│   │   ├── chat.ts             # Chat state with context management
 │   │   └── settings.ts         # App settings and theme management
 │   ├── services/               # External service integrations
 │   │   └── api.ts              # Backend API communication
 │   ├── lib/                    # Utility functions
 │   │   └── utils.ts            # Common utilities and helpers
 │   ├── types/                  # TypeScript type definitions
-│   │   └── index.ts            # Application types and interfaces
+│   │   └── index.ts            # Types including Confidence interface
 │   ├── App.tsx                 # Main application component
 │   ├── main.tsx                # Application entry point
 │   └── index.css               # Global styles and Tailwind imports
-├── chatbot-backend-improved.py # Enhanced Flask backend with new search
-├── search_engine.py            # Advanced search engine module
+├── chatbot-backend-improved.py # Enhanced Flask backend with confidence scoring
+├── search_engine.py            # Advanced search with confidence calculation
+├── summarizer.py               # AI-powered content summarization
 ├── create_vector_index.py      # FAISS index creation
 ├── index_documents_improved.py # Document indexing script
 ├── documentation/              # Markdown documentation files
