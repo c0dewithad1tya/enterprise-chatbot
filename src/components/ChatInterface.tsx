@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AlertCircle, Sparkles, MessageSquare, Users, Zap, Target, Wrench, BookOpen } from 'lucide-react'
+import { AlertCircle, MessageSquare, Users, Zap, Target, Wrench, BookOpen } from 'lucide-react'
 import { Message } from './Message'
 import { MessageInput } from './MessageInput'
 import { useChatStore } from '@/store/chat'
-import { cn } from '@/lib/utils'
 
 export function ChatInterface() {
   const { currentChat, error, clearError } = useChatStore()

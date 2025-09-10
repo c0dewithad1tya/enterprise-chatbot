@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Paperclip, Loader2, Mic, MicOff } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -19,7 +19,6 @@ interface MessageInputProps {
 export function MessageInput({ suggestedQuery, onQueryProcessed }: MessageInputProps) {
   const [isRecording, setIsRecording] = useState(false)
   const [charCount, setCharCount] = useState(0)
-  const [loadingMessageId, setLoadingMessageId] = useState<string | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   
   const { addMessage, updateMessage, setLoading, setError, clearError, currentChat } = useChatStore()
@@ -77,7 +76,7 @@ export function MessageInput({ suggestedQuery, onQueryProcessed }: MessageInputP
       // The loading message will be the last assistant message
       return { query }
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, _variables, _context) => {
       // Get the current chat to find the loading message
       const currentChat = useChatStore.getState().currentChat
       if (currentChat && currentChat.messages.length > 0) {

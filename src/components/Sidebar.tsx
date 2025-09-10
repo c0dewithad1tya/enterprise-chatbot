@@ -1,4 +1,3 @@
-import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Plus, 
@@ -9,7 +8,6 @@ import {
   ChevronLeft, 
   ChevronRight,
   Settings,
-  User,
   Trash2
 } from 'lucide-react'
 import { useChatStore } from '@/store/chat'

@@ -1,4 +1,3 @@
-import React from 'react'
 import { motion } from 'framer-motion'
 import { Menu, Trash2, MoreVertical } from 'lucide-react'
 import { useChatStore } from '@/store/chat'
