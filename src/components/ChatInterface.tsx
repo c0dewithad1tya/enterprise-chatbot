@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { AlertCircle, MessageSquare, Users, Zap, Target, Wrench, BookOpen } from 'lucide-react'
 import { Message } from './Message'
 import { MessageInput } from './MessageInput'
+import { Logo } from './Logo'
 import { useChatStore } from '@/store/chat'
 
 export function ChatInterface() {
@@ -72,20 +73,7 @@ export function ChatInterface() {
           className="mb-12"
         >
           <div className="flex justify-center mb-6">
-            <motion.div
-              animate={{ 
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.05, 1]
-              }}
-              transition={{ 
-                duration: 4, 
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="w-8 h-8 bg-gray-900 dark:bg-gray-100 rounded-lg flex items-center justify-center text-white dark:text-gray-900 shadow-sm font-bold text-sm"
-            >
-              W
-            </motion.div>
+            <Logo size="large" animate />
           </div>
           
           <motion.h1

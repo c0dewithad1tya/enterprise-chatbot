@@ -210,7 +210,7 @@ export const Message = React.memo<MessageProps>(function Message({ message, isLa
                 <p className="whitespace-pre-wrap" role="text">{message.content}</p>
               ) : (
                 <div className="prose prose-sm max-w-none dark:prose-invert" role="text">
-                  {renderMarkdown(displayedContent)}
+                  {renderMarkdown(displayedContent.replace(/\\n/g, '\n').replace(/\\t/g, '  '))}
                   {isTyping && (
                     <motion.span
                       animate={{ opacity: [0, 1, 0] }}
@@ -245,9 +245,26 @@ export const Message = React.memo<MessageProps>(function Message({ message, isLa
                         className="flex items-center space-x-2 text-sm"
                       >
                         <div className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
-                        <span className="text-primary-600 dark:text-primary-400 hover:underline cursor-pointer">
-                          {source.title}
-                        </span>
+                        {source.link ? (
+                          <a
+                            href={source.link}
+                            className="text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {source.title}
+                            <ExternalLink size={10} />
+                          </a>
+                        ) : (
+                          <span className="text-primary-600 dark:text-primary-400">
+                            {source.title}
+                          </span>
+                        )}
+                        {source.relevance && (
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            ({Math.round(source.relevance * 100)}% match)
+                          </span>
+                        )}
                       </motion.div>
                     ))}
                   </div>

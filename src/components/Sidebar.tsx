@@ -13,6 +13,7 @@ import {
 import { useChatStore } from '@/store/chat'
 import { useSettingsStore } from '@/store/settings'
 import { formatTimestamp, cn } from '@/lib/utils'
+import { Logo } from './Logo'
 
 export function Sidebar() {
   const { 
@@ -68,12 +69,7 @@ export function Sidebar() {
               className="flex items-center justify-between"
             >
               <div className="flex items-center space-x-3">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="w-8 h-8 rounded-lg bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 font-bold text-sm shadow-sm"
-                >
-                  W
-                </motion.div>
+                <Logo size="small" />
                 <h2 className="text-lg font-semibold gradient-text">WhoKnows?</h2>
               </div>
               
@@ -94,12 +90,7 @@ export function Sidebar() {
               exit={{ opacity: 0 }}
               className="flex flex-col items-center space-y-3"
             >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="w-8 h-8 rounded-lg bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 font-bold text-sm shadow-sm"
-              >
-                W
-              </motion.div>
+              <Logo size="small" />
               
               <motion.button
                 whileHover={{ scale: 1.05 }}

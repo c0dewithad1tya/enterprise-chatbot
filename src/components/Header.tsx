@@ -3,6 +3,7 @@ import { Menu, Trash2, MoreVertical } from 'lucide-react'
 import { useChatStore } from '@/store/chat'
 import { useSettingsStore } from '@/store/settings'
 import { cn } from '@/lib/utils'
+import { Logo } from './Logo'
 
 export function Header() {
   const { currentChat, deleteChat, createNewChat } = useChatStore()
@@ -38,13 +39,7 @@ export function Header() {
         </motion.button>
 
         <div className="flex items-center space-x-3">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg"
-          >
-            W
-          </motion.div>
+          <Logo size="small" />
           
           <div>
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
